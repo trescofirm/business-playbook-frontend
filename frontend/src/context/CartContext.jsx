@@ -11,14 +11,12 @@ import {
 
 const CartContext = createContext(null);
 
-
 /* =========================================================
    STORAGE KEY
 ========================================================= */
 
 const CART_STORAGE_KEY =
   "business_playbook_cart";
-
 
 /* =========================================================
    VALID BOOKS
@@ -30,40 +28,118 @@ const VALID_BOOK_IDS = [
   "unlock-focus",
 ];
 
-
 /* =========================================================
-   FIXED BOOK PRICE
+   USD-ONLY PRICES
 ========================================================= */
 
-const BOOK_PRICE = 199;
+const BOOK_PRICES = {
+  "how-to-attract-women": 19.99,
 
+  "dopamine-detox": 15.99,
 
-/* =========================================================
-   COLLECTION PRICES
-========================================================= */
-
-const COLLECTION_PRICE = {
-  0: 0,
-  1: 199,
-  2: 399,
-  3: 499,
+  "unlock-focus": 15.99,
 };
 
+/* =========================================================
+   OLD / REFERENCE PRICES
+========================================================= */
+
+const BOOK_OLD_PRICES = {
+  "how-to-attract-women": 25.0,
+  "dopamine-detox": 20.0,
+  "unlock-focus": 20.0,
+};
+
+/* =========================================================
+   COMPLETE COLLECTION
+========================================================= */
+
+const COLLECTION_PRICE = 45.0;
+
+/* =========================================================
+   CURRENCY
+========================================================= */
+
+const DEFAULT_CURRENCY = "USD";
+
+/* =========================================================
+   COUPONS
+========================================================= */
+
+const COUPONS = {
+  PIR: {
+    type: "percentage",
+    value: 0.10,
+    message: "Coupon applied — 10% discount added.",
+  },
+};
+
+/* =========================================================
+   GET BOOK PRICE
+========================================================= */
+
+const getBookPrice = (id) => {
+  return Number(BOOK_PRICES[id]) || 0;
+};
+
+/* =========================================================
+   GET OLD BOOK PRICE
+========================================================= */
+
+const getBookOldPrice = (id) => {
+  const value = BOOK_OLD_PRICES[id];
+
+  return value == null
+    ? null
+    : Number(value);
+};
+
+/* =========================================================
+   GET COLLECTION PRICE
+========================================================= */
+
+const getCollectionPrice = () => {
+  return Number(COLLECTION_PRICE) || 0;
+};
+
+/* =========================================================
+   GET CURRENCY FROM COUNTRY
+========================================================= */
+
+/* =========================================================
+   CURRENCY SYMBOL
+========================================================= */
+
+const getCurrencySymbol = () => "$";
+
+/* =========================================================
+   FORMAT PRICE
+========================================================= */
+
+const formatPrice = (
+  value,
+  currency
+) => {
+  const amount = Number(
+    value || 0
+  );
+
+  return new Intl.NumberFormat("en-US", {
+    style: "currency",
+    currency: "USD",
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2,
+  }).format(amount);
+};
 
 /* =========================================================
    CLEAN CART
-=========================================================
-
-   Rules:
-   - Only 3 books are allowed
-   - Each book can exist only once
-   - Quantity is always 1
-   - Every book costs ₹199
-   - Old "complete-collection" products are removed
-   - Unknown products are removed
 ========================================================= */
 
-const cleanCart = (items) => {
+const cleanCart = (
+  items,
+  currency = DEFAULT_CURRENCY
+) => {
   if (!Array.isArray(items)) {
     return [];
   }
@@ -75,12 +151,14 @@ const cleanCart = (items) => {
       return;
     }
 
-    /* Only allow our 3 real books */
-    if (!VALID_BOOK_IDS.includes(item.id)) {
+    if (
+      !VALID_BOOK_IDS.includes(
+        item.id
+      )
+    ) {
       return;
     }
 
-    /* Prevent duplicate books */
     const alreadyExists =
       uniqueItems.some(
         (existing) =>
@@ -97,8 +175,17 @@ const cleanCart = (items) => {
       title:
         item.title || "",
 
-      /* ALWAYS ₹199 */
-      price: BOOK_PRICE,
+      price:
+        getBookPrice(
+          item.id,
+          currency
+        ),
+
+      oldPrice:
+        getBookOldPrice(
+          item.id,
+          currency
+        ),
 
       image:
         item.image ||
@@ -108,14 +195,12 @@ const cleanCart = (items) => {
       description:
         item.description || "",
 
-      /* Quantity is ALWAYS 1 */
       quantity: 1,
     });
   });
 
   return uniqueItems;
 };
-
 
 /* =========================================================
    CART PROVIDER
@@ -124,6 +209,14 @@ const cleanCart = (items) => {
 export function CartProvider({
   children,
 }) {
+  /* =======================================================
+     CURRENCY STATE
+  ======================================================= */
+
+  const [currency, setCurrency] =
+    useState(
+      DEFAULT_CURRENCY
+    );
 
   /* =======================================================
      CART STATE
@@ -144,10 +237,11 @@ export function CartProvider({
         const parsed =
           JSON.parse(saved);
 
-        return cleanCart(parsed);
-
+        return cleanCart(
+          parsed,
+          DEFAULT_CURRENCY
+        );
       } catch (error) {
-
         console.error(
           "Unable to load cart:",
           error
@@ -157,7 +251,6 @@ export function CartProvider({
       }
     });
 
-
   /* =======================================================
      COUPON STATE
   ======================================================= */
@@ -165,6 +258,18 @@ export function CartProvider({
   const [coupon, setCoupon] =
     useState("");
 
+  /* =======================================================
+     UPDATE CART WHEN CURRENCY CHANGES
+  ======================================================= */
+
+  useEffect(() => {
+    setCartItems((items) =>
+      cleanCart(
+        items,
+        currency
+      )
+    );
+  }, [currency]);
 
   /* =======================================================
      SAVE CART
@@ -184,28 +289,55 @@ export function CartProvider({
     }
   }, [cartItems]);
 
+  /* =======================================================
+     CHANGE CURRENCY
+  ======================================================= */
+
+  const changeCurrency = (
+    nextCurrency
+  ) => {
+    if (
+      nextCurrency !== "USD"
+    ) {
+      return;
+    }
+
+    if (
+      nextCurrency === currency
+    ) {
+      return;
+    }
+
+    setCurrency(
+      nextCurrency
+    );
+
+    /*
+     * Coupon is revalidated after
+     * currency changes.
+     */
+    setCoupon("");
+  };
+
+  /* =======================================================
+     SET COUNTRY
+  ======================================================= */
+
+  const setCountry = () => {
+    changeCurrency("USD");
+  };
 
   /* =======================================================
      ADD ONE BOOK
-  =======================================================
+  ======================================================= */
 
-     Example:
-
-     addToCart(book)
-
-     If book already exists:
-     → Nothing happens
-
-     No quantity system.
-========================================================= */
-
-  const addToCart = (product) => {
-
+  const addToCart = (
+    product
+  ) => {
     if (!product?.id) {
       return;
     }
 
-    /* Only our 3 books */
     if (
       !VALID_BOOK_IDS.includes(
         product.id
@@ -215,12 +347,11 @@ export function CartProvider({
     }
 
     setCartItems((items) => {
-
-      /* Check if book already exists */
       const exists =
         items.some(
           (item) =>
-            item.id === product.id
+            item.id ===
+            product.id
         );
 
       if (exists) {
@@ -233,8 +364,17 @@ export function CartProvider({
         title:
           product.title || "",
 
-        /* NEVER use product.price */
-        price: BOOK_PRICE,
+        price:
+          getBookPrice(
+            product.id,
+            currency
+          ),
+
+        oldPrice:
+          getBookOldPrice(
+            product.id,
+            currency
+          ),
 
         image:
           product.image ||
@@ -242,7 +382,8 @@ export function CartProvider({
           null,
 
         description:
-          product.description || "",
+          product.description ||
+          "",
 
         quantity: 1,
       };
@@ -254,34 +395,18 @@ export function CartProvider({
     });
   };
 
-
   /* =======================================================
      ADD MULTIPLE BOOKS
-  =======================================================
+  ======================================================= */
 
-     Used by:
-
-     GET ALL 3 BOOKS — ₹499
-
-     Books are stored individually:
-
-     Book 1 → ₹199
-     Book 2 → ₹199
-     Book 3 → ₹199
-
-     Cart automatically applies:
-
-     3 books → ₹499
-========================================================= */
-
-  const addBooksToCart = (products) => {
-
+  const addBooksToCart = (
+    products
+  ) => {
     if (!Array.isArray(products)) {
       return;
     }
 
     setCartItems((items) => {
-
       const existingIds =
         new Set(
           items.map(
@@ -292,7 +417,6 @@ export function CartProvider({
       const newBooks =
         products
           .filter((product) => {
-
             if (!product?.id) {
               return false;
             }
@@ -321,8 +445,17 @@ export function CartProvider({
             title:
               product.title || "",
 
-            /* ALWAYS ₹199 */
-            price: BOOK_PRICE,
+            price:
+              getBookPrice(
+                product.id,
+                currency
+              ),
+
+            oldPrice:
+              getBookOldPrice(
+                product.id,
+                currency
+              ),
 
             image:
               product.image ||
@@ -343,33 +476,35 @@ export function CartProvider({
     });
   };
 
-
   /* =======================================================
-     DELETE ONE BOOK
+     REMOVE ONE BOOK
   ======================================================= */
 
-  const removeItem = (id) => {
-
+  const removeItem = (
+    id
+  ) => {
     setCartItems((items) =>
       items.filter(
         (item) =>
           item.id !== id
       )
     );
-  };
 
-
-  /* =======================================================
-     CLEAR ENTIRE CART
-  ======================================================= */
-
-  const clearCart = () => {
-
-    setCartItems([]);
-
+    /*
+     * Removing a book can change
+     * bundle eligibility.
+     */
     setCoupon("");
   };
 
+  /* =======================================================
+     CLEAR CART
+  ======================================================= */
+
+  const clearCart = () => {
+    setCartItems([]);
+    setCoupon("");
+  };
 
   /* =======================================================
      BOOK COUNT
@@ -381,7 +516,6 @@ export function CartProvider({
       3
     );
 
-
   /* =======================================================
      CART COUNT
   ======================================================= */
@@ -389,74 +523,108 @@ export function CartProvider({
   const cartCount =
     bookCount;
 
-
   /* =======================================================
-     ACTUAL INDIVIDUAL VALUE
-  =======================================================
-
-     1 × ₹199 = ₹199
-     2 × ₹199 = ₹398
-     3 × ₹199 = ₹597
+     INDIVIDUAL SUBTOTAL
   ======================================================= */
 
   const actualSubtotal =
-    bookCount * BOOK_PRICE;
-
+    Number(
+      cartItems
+        .reduce(
+          (
+            sum,
+            item
+          ) =>
+            sum +
+            getBookPrice(
+              item.id,
+              currency
+            ),
+          0
+        )
+        .toFixed(2)
+    );
 
   /* =======================================================
-     COLLECTION PRICE
-  =======================================================
-
-     0 books → ₹0
-     1 book  → ₹199
-     2 books → ₹399
-     3 books → ₹499
-
-     IMPORTANT:
-     There is NO ₹599 anywhere.
+     COLLECTION / CURRENT SUBTOTAL
   ======================================================= */
 
   const collectionTotal =
-    COLLECTION_PRICE[bookCount] || 0;
-
+    bookCount === 3
+      ? getCollectionPrice(
+          currency
+        )
+      : actualSubtotal;
 
   /* =======================================================
-     SAVING
-  =======================================================
-
-     1 book:
-     ₹199 → ₹199 = ₹0 saving
-
-     2 books:
-     ₹398 → ₹399 = ₹0 saving
-
-     3 books:
-     ₹597 → ₹499 = ₹98 saving
+     BUNDLE SAVING
   ======================================================= */
 
   const bundleSaving =
-    Math.max(
-      0,
-      actualSubtotal -
-        collectionTotal
-    );
-
-
-  /* =======================================================
-     COUPON DISCOUNT
-  =======================================================
-
-     PLAYBOOK10
-     = 10% off collection price
-  ======================================================= */
-
-  const discount =
-    coupon === "PLAYBOOK10"
-      ? Math.round(
-          collectionTotal * 0.1
+    bookCount === 3
+      ? Number(
+          (
+            actualSubtotal -
+            getCollectionPrice(
+              currency
+            )
+          ).toFixed(2)
         )
       : 0;
 
+  /* =======================================================
+     INDIVIDUAL SAVING
+  ======================================================= */
+
+  const individualSaving =
+    bundleSaving;
+
+  /* =======================================================
+     CURRENT COUPON CONFIG
+  ======================================================= */
+
+  const couponConfig =
+    COUPONS[coupon];
+
+  /* =======================================================
+     COUPON RATE
+  ======================================================= */
+
+  const couponRate =
+    couponConfig?.type ===
+    "percentage"
+      ? couponConfig.value
+      : 0;
+
+  /* =======================================================
+     DISCOUNT
+  ======================================================= */
+
+  let discount = 0;
+
+  if (couponConfig) {
+    if (
+      couponConfig.type ===
+      "fixed"
+    ) {
+      discount =
+        Math.min(
+          Number(couponConfig.value || 0),
+          collectionTotal
+        );
+    } else if (
+      couponConfig.type ===
+      "percentage"
+    ) {
+      discount =
+        Number(
+          (
+            collectionTotal *
+            couponConfig.value
+          ).toFixed(2)
+        );
+    }
+  }
 
   /* =======================================================
      FINAL TOTAL
@@ -465,10 +633,13 @@ export function CartProvider({
   const total =
     Math.max(
       0,
-      collectionTotal -
-        discount
+      Number(
+        (
+          collectionTotal -
+          discount
+        ).toFixed(2)
+      )
     );
-
 
   /* =======================================================
      CART TOTAL
@@ -477,7 +648,6 @@ export function CartProvider({
   const cartTotal =
     total;
 
-
   /* =======================================================
      SUBTOTAL
   ======================================================= */
@@ -485,23 +655,19 @@ export function CartProvider({
   const subtotal =
     collectionTotal;
 
-
   /* =======================================================
      APPLY COUPON
   ======================================================= */
 
-  const applyCoupon = (code) => {
-
+  const applyCoupon = (
+    code
+  ) => {
     const normalizedCode =
       String(code || "")
         .trim()
         .toUpperCase();
 
-
-    /* Empty code */
-
     if (!normalizedCode) {
-
       setCoupon("");
 
       return {
@@ -512,55 +678,42 @@ export function CartProvider({
       };
     }
 
-
-    /* Valid coupon */
-
-    if (
-      normalizedCode ===
-      "PLAYBOOK10"
-    ) {
-
-      /* Cart must contain a book */
-
-      if (bookCount === 0) {
-
-        setCoupon("");
-
-        return {
-          success: false,
-
-          message:
-            "Add a book before applying a coupon.",
-        };
-      }
-
-
-      setCoupon(
-        normalizedCode
-      );
-
+    if (bookCount === 0) {
+      setCoupon("");
 
       return {
-        success: true,
+        success: false,
 
         message:
-          "Coupon applied — 10% discount added.",
+          "Add a book before applying a coupon.",
       };
     }
 
+    /* ================================================
+       USD
+    ================================================ */
 
-    /* Invalid coupon */
+    if (normalizedCode === "PIR") {
+      setCoupon(normalizedCode);
+
+      return {
+        success: true,
+        message: "Coupon applied — 10% discount added.",
+      };
+    }
+
+    /* ================================================
+       WRONG COUPON
+    ================================================ */
 
     setCoupon("");
 
     return {
       success: false,
 
-      message:
-        "Invalid coupon code.",
+      message: "Invalid coupon. Use PIR.",
     };
   };
-
 
   /* =======================================================
      REMOVE COUPON
@@ -570,6 +723,39 @@ export function CartProvider({
     setCoupon("");
   };
 
+  /* =======================================================
+     FORMATTED PRICES
+  ======================================================= */
+
+  const formattedActualSubtotal =
+    formatPrice(
+      actualSubtotal,
+      currency
+    );
+
+  const formattedSubtotal =
+    formatPrice(
+      subtotal,
+      currency
+    );
+
+  const formattedBundleSaving =
+    formatPrice(
+      bundleSaving,
+      currency
+    );
+
+  const formattedDiscount =
+    formatPrice(
+      discount,
+      currency
+    );
+
+  const formattedTotal =
+    formatPrice(
+      total,
+      currency
+    );
 
   /* =======================================================
      CONTEXT PROVIDER
@@ -578,7 +764,6 @@ export function CartProvider({
   return (
     <CartContext.Provider
       value={{
-
         /* -----------------------------------------------
            CART
         ----------------------------------------------- */
@@ -589,6 +774,20 @@ export function CartProvider({
 
         bookCount,
 
+        /* -----------------------------------------------
+           CURRENCY
+        ----------------------------------------------- */
+
+        currency,
+
+        currencySymbol:
+          getCurrencySymbol(
+            currency
+          ),
+
+        changeCurrency,
+
+        setCountry,
 
         /* -----------------------------------------------
            PRICES
@@ -602,12 +801,34 @@ export function CartProvider({
 
         bundleSaving,
 
+        individualSaving,
+
+        collectionPrice:
+          getCollectionPrice(
+            currency
+          ),
+
         discount,
+
+        couponRate,
 
         total,
 
         cartTotal,
 
+        /* -----------------------------------------------
+           FORMATTED PRICES
+        ----------------------------------------------- */
+
+        formattedActualSubtotal,
+
+        formattedSubtotal,
+
+        formattedBundleSaving,
+
+        formattedDiscount,
+
+        formattedTotal,
 
         /* -----------------------------------------------
            COUPON
@@ -618,7 +839,6 @@ export function CartProvider({
         applyCoupon,
 
         removeCoupon,
-
 
         /* -----------------------------------------------
            ACTIONS
@@ -638,20 +858,17 @@ export function CartProvider({
   );
 }
 
-
 /* =========================================================
    USE CART
 ========================================================= */
 
 export function useCart() {
-
   const context =
     useContext(
       CartContext
     );
 
   if (!context) {
-
     throw new Error(
       "useCart must be used inside CartProvider"
     );

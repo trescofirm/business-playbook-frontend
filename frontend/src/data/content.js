@@ -53,9 +53,9 @@ export const books = [
       "One-time purchase",
     ],
 
-    price: 199,
+    price: 19.99,
 
-    oldPrice: 299,
+    oldPrice: 25.00,
 
     available: true,
   },
@@ -94,9 +94,11 @@ export const books = [
       "Phone, tablet & computer",
     ],
 
-    price: 199,
+    /* UPDATED PRICE */
 
-    oldPrice: 299,
+    price: 15.99,
+
+    oldPrice: 20.00,
 
     available: true,
   },
@@ -135,13 +137,41 @@ export const books = [
       "One-time purchase",
     ],
 
-    price: 199,
+    /* UPDATED PRICE */
 
-    oldPrice: 299,
+    price: 15.99,
+
+    oldPrice: 20.00,
 
     available: true,
   },
 ];
+
+
+// =========================================================
+// COMPLETE COLLECTION
+// =========================================================
+
+export const collection = {
+  title: "Complete Collection",
+
+  description:
+    "Get all three practical playbooks together and save more.",
+
+  /* Individual sale prices:
+     $19.99 + $15.99 + $15.99 = $51.97
+  */
+
+  individualTotal: 51.97,
+
+  regularPrice: 50.00,
+
+  price: 45.00,
+
+  /* $51.97 - $45.00 = $6.97 */
+
+  saving: 6.97,
+};
 
 
 // =========================================================
@@ -152,7 +182,7 @@ export const testimonials = [
   {
     id: 1,
 
-    name: "Rahul M.",
+    name: "John Mitchell",
 
     role: "Entrepreneur",
 
@@ -163,7 +193,7 @@ export const testimonials = [
   {
     id: 2,
 
-    name: "Arjun K.",
+    name: "Michael Richardson",
 
     role: "Student",
 
@@ -174,7 +204,7 @@ export const testimonials = [
   {
     id: 3,
 
-    name: "Dev P.",
+    name: "Daniel Wilson",
 
     role: "Professional",
 
@@ -193,49 +223,89 @@ export const faqs = [
     id: 1,
 
     question:
-      "What do I receive after purchasing?",
+      "Who can benefit from these books?",
 
     answer:
-      "For the digital edition, you receive access to the purchased PDF or ebook. Delivery details will be sent to your purchase email.",
+      "If you struggle with distractions, low focus, lack of confidence, or want to improve your dating and social life, these books are for you.",
   },
 
   {
     id: 2,
 
     question:
-      "Can I read the books on my phone?",
+      "Are these books actually helpful?",
 
     answer:
-      "Yes. The digital edition is designed to work across phones, tablets and computers.",
+      "They’re built around practical ideas and actionable advice you can apply in everyday life—not just theory.",
   },
 
   {
     id: 3,
 
     question:
-      "Do you offer individual books?",
+      "What if I’m completely new to self-improvement?",
 
     answer:
-      "Yes. You can choose and purchase individual books according to your needs.",
+      "That’s okay. The books are beginner-friendly and focus on simple steps you can start using immediately.",
   },
 
   {
     id: 4,
 
     question:
-      "Is this a subscription?",
+      "Will one book solve all my problems?",
 
     answer:
-      "No. The books are sold as a one-time purchase.",
+      "No book can do that. These are tools to help you understand yourself, build better habits, and take meaningful action.",
   },
 
   {
     id: 5,
 
     question:
-      "How do I contact you?",
+      "How do I know which book is right for me?",
 
     answer:
-      "You can contact us through the contact options available on the website for purchase-related questions.",
+      "Choose based on what you want to improve—focus, discipline, confidence, relationships, dating, or personal growth.",
+  },
+
+  {
+    id: 6,
+
+    question:
+      "Are these books just motivational content?",
+
+    answer:
+      "No. They focus on practical strategies, insights, and actions rather than empty motivation.",
+  },
+
+  {
+    id: 7,
+
+    question:
+      "Can these books really help me become more confident?",
+
+    answer:
+      "They can give you useful perspectives and practical steps, but real confidence comes from applying them consistently.",
+  },
+
+  {
+    id: 8,
+
+    question:
+      "Are the dating and attraction books about manipulation?",
+
+    answer:
+      "No. They focus on confidence, communication, understanding attraction, and building healthier social interactions.",
+  },
+
+  {
+    id: 9,
+
+    question:
+      "Can I get a refund after purchasing?",
+
+    answer:
+      "Please check our refund policy for details regarding eligibility and applicable conditions.",
   },
 ];

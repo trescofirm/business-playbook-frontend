@@ -10,12 +10,46 @@ import {
   X,
   ShoppingBag,
   ArrowUpRight,
-  Plus,
-  Minus,
-  Trash2,
 } from "lucide-react";
 
 import { useCart } from "../context/CartContext";
+
+import {
+  books,
+  collection,
+} from "../data/content";
+
+
+/* =========================================================
+   COLLECTION PRICE
+========================================================= */
+
+const COLLECTION_PRICE =
+  Number(
+    collection?.price ?? 45
+  );
+
+
+/* =========================================================
+   INDIVIDUAL TOTAL
+=========================================================
+
+   Book 1  → $19.99
+   Book 2  → $15.99
+   Book 3  → $15.99
+
+   Total    → $51.97
+========================================================= */
+
+const INDIVIDUAL_TOTAL =
+  books
+    .slice(0, 3)
+    .reduce(
+      (sum, book) =>
+        sum +
+        Number(book.price || 0),
+      0
+    );
 
 
 /* =========================================================
@@ -23,39 +57,51 @@ import { useCart } from "../context/CartContext";
 ========================================================= */
 
 function Navbar() {
-  const navigate = useNavigate();
+  const navigate =
+    useNavigate();
 
   const {
     cartItems,
     cartCount,
-    cartTotal,
     subtotal,
     discount,
     total,
     coupon,
+    bundleSaving,
     applyCoupon,
-    increaseQuantity,
-    decreaseQuantity,
     removeItem,
+    addBooksToCart,
   } = useCart();
 
 
-  const [menuOpen, setMenuOpen] =
-    useState(false);
-
-  const [cartOpen, setCartOpen] =
-    useState(false);
-
-  const [couponInput, setCouponInput] =
-    useState("");
-
-  const [couponMessage, setCouponMessage] =
-    useState("");
-
-
   /* =======================================================
-     OPEN CART EVENT
+     STATE
   ======================================================= */
+
+  const [
+    menuOpen,
+    setMenuOpen,
+  ] = useState(false);
+
+  const [
+    cartOpen,
+    setCartOpen,
+  ] = useState(false);
+
+  const [
+    couponInput,
+    setCouponInput,
+  ] = useState("");
+
+  const [
+    couponMessage,
+    setCouponMessage,
+  ] = useState("");
+
+
+  /* =====================================================
+     OPEN CART EVENT
+  ===================================================== */
 
   useEffect(() => {
     const openCart = () => {
@@ -76,26 +122,35 @@ function Navbar() {
   }, []);
 
 
-  /* =======================================================
-     BODY SCROLL LOCK
-  ======================================================= */
+  /* =====================================================
+     LOCK BODY SCROLL
+  ===================================================== */
 
   useEffect(() => {
-    if (menuOpen || cartOpen) {
-      document.body.style.overflow = "hidden";
+    if (
+      menuOpen ||
+      cartOpen
+    ) {
+      document.body.style.overflow =
+        "hidden";
     } else {
-      document.body.style.overflow = "";
+      document.body.style.overflow =
+        "";
     }
 
     return () => {
-      document.body.style.overflow = "";
+      document.body.style.overflow =
+        "";
     };
-  }, [menuOpen, cartOpen]);
+  }, [
+    menuOpen,
+    cartOpen,
+  ]);
 
 
-  /* =======================================================
-     SCROLL
-  ======================================================= */
+  /* =====================================================
+     SCROLL TO SECTION
+  ===================================================== */
 
   const scrollTo = (id) => {
     setMenuOpen(false);
@@ -111,25 +166,49 @@ function Navbar() {
   };
 
 
-  /* =======================================================
-     CART
-  ======================================================= */
+  /* =====================================================
+     OPEN CART
+  ===================================================== */
 
   const openCart = () => {
     setCartOpen(true);
   };
+
+
+  /* =====================================================
+     CLOSE CART
+  ===================================================== */
 
   const closeCart = () => {
     setCartOpen(false);
   };
 
 
-  /* =======================================================
+  /* =====================================================
+     BUY ALL 3 BOOKS
+  ===================================================== */
+
+  const handleBuyCollection = () => {
+    addBooksToCart(
+      books.slice(0, 3)
+    );
+
+    setMenuOpen(false);
+
+    setTimeout(() => {
+      setCartOpen(true);
+    }, 150);
+  };
+
+
+  /* =====================================================
      CHECKOUT
-  ======================================================= */
+  ===================================================== */
 
   const handleCheckout = () => {
-    if (!cartItems.length) {
+    if (
+      !cartItems.length
+    ) {
       return;
     }
 
@@ -139,38 +218,50 @@ function Navbar() {
   };
 
 
-  /* =======================================================
+  /* =====================================================
      COUPON
-  ======================================================= */
+  ===================================================== */
 
   const handleCoupon = () => {
     const result =
-      applyCoupon(couponInput);
+      applyCoupon(
+        couponInput
+      );
 
     setCouponMessage(
       result.message
     );
 
-    if (result.success) {
+    if (
+      result.success
+    ) {
       setCouponInput("");
     }
   };
 
 
-  /* =======================================================
-     FORMAT PRICE
-  ======================================================= */
+  /* =====================================================
+     PRICE FORMAT
+  ===================================================== */
 
-  const formatPrice = (price) => {
-    return Number(price || 0).toLocaleString(
-      "en-IN"
+  const formatPrice = (
+    price
+  ) => {
+    return Number(
+      price || 0
+    ).toLocaleString(
+      "en-US",
+      {
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 2,
+      }
     );
   };
 
 
-  /* =======================================================
+  /* =====================================================
      RENDER
-  ======================================================= */
+  ===================================================== */
 
   return (
     <>
@@ -182,6 +273,7 @@ function Navbar() {
 
         <div className="navbar-container">
 
+
           {/* =================================================
               BRAND
           ================================================= */}
@@ -192,8 +284,8 @@ function Navbar() {
               scrollTo("home")
             }
             type="button"
+            aria-label="Go to home"
           >
-
             <span className="brand-mark">
               BP.
             </span>
@@ -201,15 +293,17 @@ function Navbar() {
             <span className="brand-name">
               BUSINESS PLAYBOOK
             </span>
-
           </button>
 
 
           {/* =================================================
-              DESKTOP NAV
+              DESKTOP NAVIGATION
           ================================================= */}
 
-          <nav className="desktop-nav">
+          <nav
+            className="desktop-nav"
+            aria-label="Main navigation"
+          >
 
             <button
               onClick={() =>
@@ -220,6 +314,7 @@ function Navbar() {
               THE BOOKS
             </button>
 
+
             <button
               onClick={() =>
                 scrollTo("author")
@@ -228,6 +323,7 @@ function Navbar() {
             >
               AUTHOR
             </button>
+
 
             <button
               onClick={() =>
@@ -242,52 +338,95 @@ function Navbar() {
 
 
           {/* =================================================
-              ACTIONS
+              RIGHT NAV ACTIONS
           ================================================= */}
 
           <div className="nav-actions">
 
-            {/* CART */}
+
+            {/* ===============================================
+                CART
+            =============================================== */}
 
             <button
               className="cart-button"
               onClick={openCart}
               type="button"
-              aria-label="Open cart"
+              aria-label={`Open cart${
+                cartCount > 0
+                  ? `, ${cartCount} items`
+                  : ""
+              }`}
             >
-
-              <ShoppingBag size={18} />
+              <ShoppingBag
+                size={19}
+              />
 
               {cartCount > 0 && (
                 <span className="cart-count">
                   {cartCount}
                 </span>
               )}
-
             </button>
 
 
-            {/* BUY */}
+            {/* ===============================================
+                DESKTOP GET ALL 3 BOOKS
+            =============================================== */}
 
             <button
               className="nav-buy"
-              onClick={() =>
-                scrollTo("pricing")
+              onClick={
+                handleBuyCollection
               }
               type="button"
+              aria-label="Get all 3 books for $45"
             >
-              GET ALL 3 BOOKS — ₹499
-              <ArrowUpRight size={15} />
+
+              <span className="nav-buy-title">
+                GET ALL 3 BOOKS
+              </span>
+
+
+              <span className="nav-buy-dash">
+                —
+              </span>
+
+
+              <strong className="nav-buy-current">
+                $
+                {COLLECTION_PRICE.toFixed(
+                  0
+                )}
+              </strong>
+
+
+              <del className="nav-buy-old">
+                $
+                {INDIVIDUAL_TOTAL.toFixed(
+                  2
+                )}
+              </del>
+
+
+              <ArrowUpRight
+                size={18}
+                aria-hidden="true"
+              />
+
             </button>
 
 
-            {/* MOBILE MENU */}
+            {/* ===============================================
+                MOBILE MENU
+            =============================================== */}
 
             <button
               className="menu-button"
               onClick={() =>
                 setMenuOpen(
-                  (value) => !value
+                  (value) =>
+                    !value
                 )
               }
               type="button"
@@ -296,12 +435,15 @@ function Navbar() {
                   ? "Close menu"
                   : "Open menu"
               }
+              aria-expanded={
+                menuOpen
+              }
             >
 
               {menuOpen ? (
-                <X size={22} />
+                <X size={23} />
               ) : (
-                <Menu size={22} />
+                <Menu size={23} />
               )}
 
             </button>
@@ -311,9 +453,9 @@ function Navbar() {
         </div>
 
 
-        {/* ===================================================
-            MOBILE MENU
-        =================================================== */}
+        {/* =====================================================
+            FULLSCREEN MOBILE MENU
+        ===================================================== */}
 
         <div
           className={`fullscreen-menu ${
@@ -325,10 +467,19 @@ function Navbar() {
 
           <div className="fullscreen-menu-inner">
 
+
+            {/* =================================================
+                MENU LABEL
+            ================================================= */}
+
             <div className="mobile-menu-label">
               MENU
             </div>
 
+
+            {/* =================================================
+                BOOKS
+            ================================================= */}
 
             <button
               onClick={() =>
@@ -336,10 +487,20 @@ function Navbar() {
               }
               type="button"
             >
-              <span>THE BOOKS</span>
-              <ArrowUpRight size={18} />
+              <span>
+                THE BOOKS
+              </span>
+
+              <ArrowUpRight
+                size={20}
+                aria-hidden="true"
+              />
             </button>
 
+
+            {/* =================================================
+                AUTHOR
+            ================================================= */}
 
             <button
               onClick={() =>
@@ -347,10 +508,20 @@ function Navbar() {
               }
               type="button"
             >
-              <span>AUTHOR</span>
-              <ArrowUpRight size={18} />
+              <span>
+                AUTHOR
+              </span>
+
+              <ArrowUpRight
+                size={20}
+                aria-hidden="true"
+              />
             </button>
 
+
+            {/* =================================================
+                FAQ
+            ================================================= */}
 
             <button
               onClick={() =>
@@ -358,29 +529,78 @@ function Navbar() {
               }
               type="button"
             >
-              <span>FAQ</span>
-              <ArrowUpRight size={18} />
+              <span>
+                FAQ
+              </span>
+
+              <ArrowUpRight
+                size={20}
+                aria-hidden="true"
+              />
             </button>
 
 
+            {/* =================================================
+                MOBILE COLLECTION OFFER
+            ================================================= */}
+
             <button
               className="mobile-menu-buy"
-              onClick={() =>
-                scrollTo("pricing")
+              onClick={
+                handleBuyCollection
               }
               type="button"
+              aria-label="Get all 3 books for $45"
             >
 
-              <span>
-                GET ALL 3 BOOKS
-              </span>
+              <div className="mobile-buy-content">
 
-              <strong>
-                ₹499
+                <span className="mobile-buy-label">
+                  LIMITED OFFER
+                </span>
+
+
+                <span className="mobile-buy-title">
+                  GET ALL 3 BOOKS
+                </span>
+
+
+                <span className="mobile-buy-note">
+                  Save $
+                  {formatPrice(
+                    INDIVIDUAL_TOTAL -
+                      COLLECTION_PRICE
+                  )}{" "}
+                  on the complete collection
+                </span>
+
+              </div>
+
+
+              <div className="mobile-buy-prices">
+
+                <strong>
+                  $
+                  {COLLECTION_PRICE.toFixed(
+                    0
+                  )}
+                </strong>
+
+
+                <del>
+                  $
+                  {INDIVIDUAL_TOTAL.toFixed(
+                    2
+                  )}
+                </del>
+
+
                 <ArrowUpRight
-                  size={19}
+                  size={20}
+                  aria-hidden="true"
                 />
-              </strong>
+
+              </div>
 
             </button>
 
@@ -413,11 +633,13 @@ function Navbar() {
             ? "cart-drawer-open"
             : ""
         }`}
+        aria-label="Shopping cart"
       >
 
-        {/* ===================================================
+
+        {/* =================================================
             CART HEADER
-        =================================================== */}
+        ================================================= */}
 
         <div className="cart-header">
 
@@ -433,26 +655,29 @@ function Navbar() {
 
           </div>
 
+
           <button
             onClick={closeCart}
             type="button"
             aria-label="Close cart"
           >
-            <X size={20} />
+            <X size={21} />
           </button>
 
         </div>
 
 
-        {/* ===================================================
+        {/* =================================================
             EMPTY CART
-        =================================================== */}
+        ================================================= */}
 
         {cartItems.length === 0 ? (
 
           <div className="cart-empty">
 
-            <ShoppingBag size={38} />
+            <ShoppingBag
+              size={40}
+            />
 
             <h3>
               Your cart is empty
@@ -468,213 +693,46 @@ function Navbar() {
               className="cart-browse"
               onClick={() => {
                 closeCart();
-                scrollTo("pricing");
+
+                scrollTo(
+                  "pricing"
+                );
               }}
               type="button"
             >
               EXPLORE THE BOOKS
-              <ArrowUpRight size={16} />
+
+              <ArrowUpRight
+                size={17}
+              />
             </button>
 
           </div>
 
         ) : (
 
-          /* =================================================
-             CART CONTENT
-          ================================================= */
-
           <>
+
+            {/* =================================================
+                CART ITEMS
+            ================================================= */}
 
             <div className="cart-items">
 
-              {cartItems.map((item) => (
+              {cartItems.map(
+                (item) => (
 
-                <div
-                  className="cart-item"
-                  key={item.id}
-                >
-
-                  {/* =========================================
-                      BUNDLE
-                  ========================================= */}
-
-                  {item.bundleItems?.length > 0 ? (
-
-                    <div className="cart-bundle">
-
-                      {/* BUNDLE HEADER */}
-
-                      <div className="cart-bundle-header">
-
-                        <div>
-
-                          <span className="cart-bundle-label">
-                            3-BOOK BUNDLE
-                          </span>
-
-                          <h3>
-                            {item.title}
-                          </h3>
-
-                        </div>
-
-
-                        <button
-                          className="remove-item"
-                          onClick={() =>
-                            removeItem(
-                              item.id
-                            )
-                          }
-                          type="button"
-                          aria-label={`Remove ${item.title}`}
-                        >
-                          <Trash2
-                            size={15}
-                          />
-                        </button>
-
-                      </div>
-
-
-                      {/* =====================================
-                          THREE BOOKS
-                      ===================================== */}
-
-                      <div className="cart-bundle-books">
-
-                        {item.bundleItems.map(
-                          (book) => (
-
-                            <div
-                              className="cart-bundle-book"
-                              key={book.id}
-                            >
-
-                              <div className="cart-book-image">
-
-                                <img
-                                  src={
-                                    book.image
-                                  }
-                                  alt={
-                                    book.title
-                                  }
-                                />
-
-                              </div>
-
-
-                              <div className="cart-book-details">
-
-                                <h4>
-                                  {book.title}
-                                </h4>
-
-                                <span>
-                                  ₹
-                                  {formatPrice(
-                                    book.price
-                                  )}
-                                </span>
-
-                              </div>
-
-                            </div>
-
-                          )
-                        )}
-
-                      </div>
-
-
-                      {/* =====================================
-                          BUNDLE SUMMARY
-                      ===================================== */}
-
-                      <div className="cart-bundle-summary">
-
-                        <div className="bundle-value-row">
-
-                          <span>
-                            Individual value
-                          </span>
-
-                          <del>
-                            ₹897
-                          </del>
-
-                        </div>
-
-
-                        <div className="bundle-price-row">
-
-                          <span>
-                            Bundle price
-                          </span>
-
-                          <strong>
-                            ₹499
-                          </strong>
-
-                        </div>
-
-
-                        <div className="bundle-save">
-                          ✦ You save ₹398 with this bundle
-                        </div>
-
-                      </div>
-
-
-                      {/* =====================================
-                          QUANTITY
-                      ===================================== */}
-
-                      <div className="cart-item-actions">
-
-                        <div className="quantity-control">
-
-                          <button
-                            onClick={() =>
-                              decreaseQuantity(
-                                item.id
-                              )
-                            }
-                            type="button"
-                          >
-                            <Minus size={13} />
-                          </button>
-
-                          <span>
-                            {item.quantity}
-                          </span>
-
-                          <button
-                            onClick={() =>
-                              increaseQuantity(
-                                item.id
-                              )
-                            }
-                            type="button"
-                          >
-                            <Plus size={13} />
-                          </button>
-
-                        </div>
-
-                      </div>
-
-                    </div>
-
-                  ) : (
-
-                    /* =======================================
-                       NORMAL SINGLE PRODUCT
-                    ======================================= */
+                  <div
+                    className="cart-item"
+                    key={item.id}
+                  >
 
                     <div className="cart-single-item">
+
+
+                      {/* =======================================
+                          BOOK IMAGE
+                      ======================================= */}
 
                       <div className="cart-item-image">
 
@@ -688,6 +746,10 @@ function Navbar() {
                       </div>
 
 
+                      {/* =======================================
+                          BOOK INFORMATION
+                      ======================================= */}
+
                       <div className="cart-item-info">
 
                         <h3>
@@ -695,7 +757,7 @@ function Navbar() {
                         </h3>
 
                         <span>
-                          ₹
+                          $
                           {formatPrice(
                             item.price
                           )}
@@ -704,62 +766,30 @@ function Navbar() {
                       </div>
 
 
-                      <div className="cart-item-actions">
+                      {/* =======================================
+                          REMOVE ITEM
+                      ======================================= */}
 
-                        <div className="quantity-control">
-
-                          <button
-                            onClick={() =>
-                              decreaseQuantity(
-                                item.id
-                              )
-                            }
-                            type="button"
-                          >
-                            <Minus size={13} />
-                          </button>
-
-                          <span>
-                            {item.quantity}
-                          </span>
-
-                          <button
-                            onClick={() =>
-                              increaseQuantity(
-                                item.id
-                              )
-                            }
-                            type="button"
-                          >
-                            <Plus size={13} />
-                          </button>
-
-                        </div>
-
-
-                        <button
-                          className="remove-item"
-                          onClick={() =>
-                            removeItem(
-                              item.id
-                            )
-                          }
-                          type="button"
-                        >
-                          <Trash2
-                            size={15}
-                          />
-                        </button>
-
-                      </div>
+                      <button
+                        className="remove-item"
+                        onClick={() =>
+                          removeItem(
+                            item.id
+                          )
+                        }
+                        type="button"
+                        aria-label={`Remove ${item.title}`}
+                        title="Remove item"
+                      >
+                        <X size={16} />
+                      </button>
 
                     </div>
 
-                  )}
+                  </div>
 
-                </div>
-
-              ))}
+                )
+              )}
 
             </div>
 
@@ -770,7 +800,77 @@ function Navbar() {
 
             <div className="cart-bottom">
 
-              {/* COUPON */}
+
+              {/* ===============================================
+                  3 BOOK BUNDLE
+              =============================================== */}
+
+              {cartCount === 3 && (
+
+                <div className="cart-bundle-price">
+
+                  <div className="cart-bundle-price-top">
+
+                    <span>
+                      3-BOOK BUNDLE
+                    </span>
+
+
+                    <div>
+
+                      <strong>
+                        $
+                        {COLLECTION_PRICE.toFixed(
+                          2
+                        )}
+                      </strong>
+
+                      <del>
+                        $
+                        {INDIVIDUAL_TOTAL.toFixed(
+                          2
+                        )}
+                      </del>
+
+                    </div>
+
+                  </div>
+
+
+                  <p>
+                    Save $
+                    {formatPrice(
+                      INDIVIDUAL_TOTAL -
+                        COLLECTION_PRICE
+                    )}{" "}
+                    with the complete collection
+                  </p>
+
+                </div>
+
+              )}
+
+
+              {/* ===============================================
+                  OTHER BUNDLE SAVING
+              =============================================== */}
+
+              {bundleSaving > 0 &&
+                cartCount !== 3 && (
+
+                  <div className="cart-bundle-saving">
+                    You save $
+                    {formatPrice(
+                      bundleSaving
+                    )}
+                  </div>
+
+                )}
+
+
+              {/* ===============================================
+                  COUPON
+              =============================================== */}
 
               <div className="coupon-area">
 
@@ -778,24 +878,38 @@ function Navbar() {
 
                   <input
                     type="text"
-                    value={couponInput}
-                    onChange={(event) =>
+                    value={
+                      couponInput
+                    }
+                    onChange={(
+                      event
+                    ) =>
                       setCouponInput(
-                        event.target.value
+                        event.target
+                          .value
                       )
                     }
-                    onKeyDown={(event) => {
+                    onKeyDown={(
+                      event
+                    ) => {
+
                       if (
-                        event.key === "Enter"
+                        event.key ===
+                        "Enter"
                       ) {
                         handleCoupon();
                       }
+
                     }}
                     placeholder="Coupon code (optional)"
+                    aria-label="Coupon code"
                   />
 
+
                   <button
-                    onClick={handleCoupon}
+                    onClick={
+                      handleCoupon
+                    }
                     type="button"
                   >
                     APPLY
@@ -805,24 +919,28 @@ function Navbar() {
 
 
                 {couponMessage && (
+
                   <p
                     className={
-                      coupon ===
-                      "PLAYBOOK10"
+                      coupon === "PIR"
                         ? "coupon-success"
                         : "coupon-error"
                     }
                   >
                     {couponMessage}
                   </p>
+
                 )}
 
               </div>
 
 
-              {/* DISCOUNT */}
+              {/* ===============================================
+                  COUPON DISCOUNT
+              =============================================== */}
 
               {discount > 0 && (
+
                 <div className="cart-discount-row">
 
                   <span>
@@ -830,17 +948,20 @@ function Navbar() {
                   </span>
 
                   <strong>
-                    −₹
+                    −$
                     {formatPrice(
                       discount
                     )}
                   </strong>
 
                 </div>
+
               )}
 
 
-              {/* TOTAL */}
+              {/* ===============================================
+                  TOTAL
+              =============================================== */}
 
               <div className="cart-total">
 
@@ -851,29 +972,22 @@ function Navbar() {
                 <div>
 
                   <strong>
-                    ₹
+                    $
                     {formatPrice(
                       total
                     )}
                   </strong>
 
-                  {coupon ? (
+
+                  {coupon && (
+
                     <del>
-                      ₹
+                      $
                       {formatPrice(
                         subtotal
                       )}
                     </del>
-                  ) : (
-                    cartItems.some(
-                      (item) =>
-                        item.bundleItems
-                          ?.length > 0
-                    ) && (
-                      <del>
-                        ₹897
-                      </del>
-                    )
+
                   )}
 
                 </div>
@@ -881,44 +995,65 @@ function Navbar() {
               </div>
 
 
-              {/* CHECKOUT */}
+              {/* ===============================================
+                  CHECKOUT
+              =============================================== */}
 
               <button
                 className="checkout-button"
-                onClick={handleCheckout}
+                onClick={
+                  handleCheckout
+                }
                 type="button"
               >
+
                 <span>
-                  CHECKOUT — ₹
+                  CHECKOUT — $
                   {formatPrice(
                     total
                   )}
                 </span>
 
                 <ArrowUpRight
-                  size={18}
+                  size={19}
                 />
+
               </button>
 
 
-              {/* INFORMATION */}
+              {/* ===============================================
+                  CART INFORMATION
+              =============================================== */}
 
               <div className="cart-info">
 
                 <div>
-                  <span>🔒</span>
+
                   <span>
-                    PhonePe · UPI · Cards
-                    & Netbanking
+                    🔒
                   </span>
+
+                  <span>
+                    Secure payment ·
+                    Cards & supported
+                    payment methods
+                  </span>
+
                 </div>
 
+
                 <div>
-                  <span>⚡</span>
+
                   <span>
-                    Instant email delivery
-                    · Digital books
+                    ⚡
                   </span>
+
+                  <span>
+                    Instant email
+                    delivery · Digital
+                    books
+                  </span>
+
                 </div>
 
               </div>
@@ -930,9 +1065,9 @@ function Navbar() {
         )}
 
       </aside>
-
     </>
   );
 }
+
 
 export default Navbar;

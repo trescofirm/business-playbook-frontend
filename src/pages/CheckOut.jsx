@@ -17,6 +17,7 @@ import {
 } from "lucide-react";
 
 import { useCart } from "../context/CartContext";
+import { PayPalButtons } from "@paypal/react-paypal-js";
 
 /* =========================================================
    API CONFIG
@@ -37,6 +38,16 @@ const API_URL = "";
 
 const RAZORPAY_KEY =
   import.meta.env.VITE_RAZORPAY_KEY_ID || "";
+
+const PAYPAL_CLIENT_ID =
+  import.meta.env.VITE_PAYPAL_CLIENT_ID || "";
+
+const USD_TO_INR_RATE = Number(
+  import.meta.env.VITE_USD_TO_INR_RATE || 90
+);
+
+const GUMROAD_FOCUS_URL =
+  "https://lakshay622.gumroad.com/l/focus-control-for-your-exam-period?wanted=true";
 
 /* =========================================================
    PRODUCT PRICES
@@ -313,6 +324,21 @@ function formatPrice(value) {
   }).format(Number(value || 0));
 }
 
+function formatINR(value) {
+  return new Intl.NumberFormat("en-IN", {
+    style: "currency",
+    currency: "INR",
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2,
+  }).format(Number(value || 0));
+}
+
+function formatCheckoutPrice(value, isIndia) {
+  return isIndia
+    ? formatINR(Number(value || 0) * USD_TO_INR_RATE)
+    : formatPrice(value);
+}
+
 /* =========================================================
    FRONTEND DISPLAY PRICING
    Backend remains the final source of truth.
@@ -422,6 +448,9 @@ function Checkout() {
     notes: "",
   });
 
+  const isIndia =
+    form.country.trim().toLowerCase() === "india";
+
   const [agree, setAgree] =
     useState(false);
 
@@ -452,6 +481,9 @@ function Checkout() {
 
   const [downloads, setDownloads] =
     useState([]);
+
+  const [paidCurrency, setPaidCurrency] =
+    useState("USD");
 
   /* ======================================================
      CURRENCY
@@ -691,12 +723,253 @@ function Checkout() {
   };
 
   /* ======================================================
+     PAYPAL — CREATE ORDER
+  ====================================================== */
+
+  const handlePayPalCreateOrder = async () => {
+    setPaymentError("");
+
+    if (!PAYPAL_CLIENT_ID) {
+      const message = "PayPal is not configured. Please add VITE_PAYPAL_CLIENT_ID to the frontend .env file.";
+      setPaymentError(message);
+      throw new Error(message);
+    }
+
+    if (!cartItems.length) {
+      setPaymentError("Your cart is empty.");
+      throw new Error("Your cart is empty.");
+    }
+
+    if (!validate()) {
+      setPaymentError(
+        "Please complete all required billing details."
+      );
+      throw new Error(
+        "Please complete all required billing details."
+      );
+    }
+
+    try {
+      setProcessing(true);
+
+      const response = await fetch(
+        `${API_URL}/api/paypal/create-order`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Accept: "application/json",
+          },
+          body: JSON.stringify({
+            items: cartItems.map((item) => ({
+              id: item.id,
+            })),
+
+            couponCode:
+              appliedCoupon || null,
+
+            customer: {
+              firstName:
+                form.firstName.trim(),
+
+              lastName:
+                form.lastName.trim(),
+
+              email:
+                form.email
+                  .trim()
+                  .toLowerCase(),
+
+              country:
+                form.country,
+
+              state:
+                form.state.trim(),
+
+              notes:
+                form.notes.trim(),
+            },
+          }),
+        }
+      );
+
+      let result;
+
+      try {
+        result = await response.json();
+      } catch {
+        throw new Error(
+          "The PayPal server returned an invalid response."
+        );
+      }
+
+      if (!response.ok || !result.success) {
+        throw new Error(
+          result.message ||
+            "Unable to create PayPal order."
+        );
+      }
+
+      const paypalOrderId =
+        result.order?.id ||
+        result.paypalOrderId ||
+        result.id;
+
+      if (!paypalOrderId) {
+        throw new Error(
+          "PayPal order was not created correctly."
+        );
+      }
+
+      return paypalOrderId;
+    } catch (error) {
+      console.error(
+        "PayPal create order error:",
+        error
+      );
+
+      setPaymentError(
+        error.message ||
+          "Unable to create PayPal order."
+      );
+
+      throw error;
+    } finally {
+      setProcessing(false);
+    }
+  };
+
+  /* ======================================================
+     PAYPAL — CAPTURE ORDER
+  ====================================================== */
+
+  const handlePayPalApprove = async (data) => {
+    setPaymentError("");
+
+    try {
+      setProcessing(true);
+
+      if (!data?.orderID) {
+        throw new Error(
+          "PayPal order ID was not returned."
+        );
+      }
+
+      const response = await fetch(
+        `${API_URL}/api/paypal/capture-order`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Accept: "application/json",
+          },
+          body: JSON.stringify({
+            paypalOrderId:
+              data.orderID,
+          }),
+        }
+      );
+
+      let result;
+
+      try {
+        result = await response.json();
+      } catch {
+        throw new Error(
+          "The PayPal server returned an invalid response."
+        );
+      }
+
+      if (!response.ok || !result.success) {
+        throw new Error(
+          result.message ||
+            "PayPal payment verification failed."
+        );
+      }
+
+      setPaymentId(
+        result.payment_id ||
+          result.capture_id ||
+          data.orderID ||
+          ""
+      );
+
+      setOrderNumber(
+        result.orderNumber || ""
+      );
+
+      setPaidCurrency(
+        result.currency || "USD"
+      );
+
+      setPurchasedItems(
+        result.items || []
+      );
+
+      setDownloads(
+        result.downloads || []
+      );
+
+      clearCart();
+      setSuccess(true);
+    } catch (error) {
+      console.error(
+        "PayPal capture error:",
+        error
+      );
+
+      setPaymentError(
+        error.message ||
+          "PayPal payment verification failed."
+      );
+    } finally {
+      setProcessing(false);
+    }
+  };
+
+  /* ======================================================
+     PAYPAL — ERROR
+  ====================================================== */
+
+  const handlePayPalError = (error) => {
+    console.error(
+      "PayPal payment error:",
+      error
+    );
+
+    setPaymentError(
+      "PayPal payment could not be completed. Please try again."
+    );
+
+    setProcessing(false);
+  };
+
+  /* ======================================================
+     GUMROAD DIRECT PURCHASE
+  ====================================================== */
+
+  const handleGumroadPurchase = () => {
+    window.open(
+      GUMROAD_FOCUS_URL,
+      "_blank",
+      "noopener,noreferrer"
+    );
+  };
+
+  /* ======================================================
      PLACE ORDER
   ====================================================== */
 
   const handlePlaceOrder =
     async () => {
       setPaymentError("");
+
+      if (!isIndia) {
+        setPaymentError(
+          "Please use PayPal for international orders."
+        );
+        return;
+      }
 
       if (!cartItems.length) {
         setPaymentError(
@@ -828,7 +1101,8 @@ function Checkout() {
         /*
          * Backend is authoritative.
          */
-        const razorpayCurrency = "USD";
+        const razorpayCurrency =
+          razorpayOrder?.currency || "INR";
 
         /* ==================================================
            OPEN RAZORPAY
@@ -1053,7 +1327,7 @@ function Checkout() {
   ====================================================== */
 
   if (success) {
-    const successCurrency = "USD";
+    const successCurrency = paidCurrency || "USD";
 
     return (
       <div className="checkout-page">
@@ -1271,11 +1545,13 @@ function Checkout() {
      PAYMENT METHOD TEXT
   ====================================================== */
 
-  const paymentMethodsText =
-    "International Cards · PayPal (if enabled)";
+  const paymentMethodsText = isIndia
+    ? "UPI · Cards · Net Banking · Wallets"
+    : "PayPal · International cards";
 
-  const paymentDescription =
-    "Secure USD payment through Razorpay.";
+  const paymentDescription = isIndia
+    ? `Secure INR payment through Razorpay. ${formatCheckoutPrice(total, true)}`
+    : "Secure USD payment through PayPal.";
 
   /* ======================================================
      CHECKOUT PAGE
@@ -1657,14 +1933,13 @@ function Checkout() {
                 <div className="checkout-gateway-info">
 
                   <strong>
-                    Razorpay Secure
-                    Payment
+                    {isIndia
+                      ? "Razorpay Secure Payment"
+                      : "PayPal Secure Payment"}
                   </strong>
 
                   <span>
-                    {
-                      paymentMethodsText
-                    }
+                    {paymentMethodsText}
                   </span>
 
                 </div>
@@ -1682,6 +1957,24 @@ function Checkout() {
               >
                 {paymentDescription}
               </p>
+
+              <div
+                style={{
+                  marginTop: "18px",
+                  padding: "18px",
+                  border: "1px solid rgba(198, 161, 91, 0.25)",
+                  borderRadius: "12px",
+                  background: "rgba(198, 161, 91, 0.05)",
+                }}
+              >
+                <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: "15px", flexWrap: "wrap" }}>
+                  <div>
+                    <strong style={{ display: "block", marginBottom: "5px" }}>Focus Control for Your Exam Period</strong>
+                    <span style={{ fontSize: "13px", opacity: 0.7 }}>Prefer Gumroad? Purchase this product directly there.</span>
+                  </div>
+                  <button type="button" onClick={handleGumroadPurchase} style={{ flexShrink: 0, border: "none", borderRadius: "8px", padding: "11px 16px", cursor: "pointer", fontWeight: 600 }}>BUY ON GUMROAD →</button>
+                </div>
+              </div>
 
               <label className="checkout-agreement">
 
@@ -1822,7 +2115,7 @@ function Checkout() {
                       </div>
 
                       <strong>
-                        {formatPrice(productPrice)}
+                        {formatCheckoutPrice(productPrice, isIndia)}
                       </strong>
 
                     </div>
@@ -1841,7 +2134,7 @@ function Checkout() {
                 </span>
 
                 <strong>
-                  {formatPrice(individualSubtotal)}
+                  {formatCheckoutPrice(individualSubtotal, isIndia)}
                 </strong>
 
               </div>
@@ -1856,7 +2149,7 @@ function Checkout() {
 
                     <strong>
                       −
-                      {formatPrice(bundleSaving)}
+                      {formatCheckoutPrice(bundleSaving, isIndia)}
                     </strong>
 
                   </div>
@@ -1869,7 +2162,7 @@ function Checkout() {
                 </span>
 
                 <strong>
-                  {formatPrice(subtotal)}
+                  {formatCheckoutPrice(subtotal, isIndia)}
                 </strong>
 
               </div>
@@ -1883,7 +2176,7 @@ function Checkout() {
 
                   <strong>
                     −
-                    {formatPrice(discount)}
+                    {formatCheckoutPrice(discount, isIndia)}
                   </strong>
 
                 </div>
@@ -1898,7 +2191,7 @@ function Checkout() {
               </span>
 
               <strong>
-                {formatPrice(total)}
+                {formatCheckoutPrice(total, isIndia)}
               </strong>
 
             </div>
@@ -1914,7 +2207,9 @@ function Checkout() {
               <div>
 
                 <strong>
-                  Razorpay
+                  {isIndia
+                    ? "Razorpay"
+                    : "PayPal"}
                 </strong>
 
                 <span>
@@ -1949,53 +2244,106 @@ function Checkout() {
 
             </div>
 
-            <button
-              className="checkout-place-order"
-              type="button"
-              onClick={
-                handlePlaceOrder
-              }
-              disabled={
-                processing
-              }
-            >
+            {isIndia ? (
+              <>
+                <button
+                  className="checkout-place-order"
+                  type="button"
+                  onClick={
+                    handlePlaceOrder
+                  }
+                  disabled={
+                    processing
+                  }
+                >
 
-              {processing ? (
-                <>
+                  {processing ? (
+                    <>
 
-                  <Loader2
-                    size={17}
-                    className="checkout-spinner"
+                      <Loader2
+                        size={17}
+                        className="checkout-spinner"
+                      />
+
+                      PROCESSING...
+
+                    </>
+                  ) : (
+                    <>
+
+                      <LockKeyhole
+                        size={17}
+                      />
+
+                      PLACE ORDER —{" "}
+
+                      {formatCheckoutPrice(total, isIndia)}
+
+                    </>
+                  )}
+
+                </button>
+
+                <p className="checkout-secure-text">
+
+                  <LockKeyhole size={12} />
+
+                  Secure payment
+                  powered by
+                  Razorpay
+
+                </p>
+              </>
+            ) : (
+              <>
+                <div
+                  style={{
+                    marginTop: "4px",
+                    width: "100%",
+                    position: "relative",
+                    zIndex: 1,
+                  }}
+                >
+                  <PayPalButtons
+                    style={{
+                      layout: "vertical",
+                      shape: "rect",
+                      label: "paypal",
+                      height: 48,
+                    }}
+                    disabled={
+                      processing
+                    }
+                    forceReRender={[
+                      total,
+                      form.country,
+                      form.state,
+                      form.email,
+                      appliedCoupon,
+                    ]}
+                    createOrder={
+                      handlePayPalCreateOrder
+                    }
+                    onApprove={
+                      handlePayPalApprove
+                    }
+                    onError={
+                      handlePayPalError
+                    }
                   />
+                </div>
 
-                  PROCESSING...
+                <p className="checkout-secure-text">
 
-                </>
-              ) : (
-                <>
+                  <LockKeyhole size={12} />
 
-                  <LockKeyhole
-                    size={17}
-                  />
+                  Secure payment
+                  powered by
+                  PayPal
 
-                  PLACE ORDER —{" "}
-
-                  {formatPrice(total)}
-
-                </>
-              )}
-
-            </button>
-
-            <p className="checkout-secure-text">
-
-              <LockKeyhole size={12} />
-
-              Secure payment
-              powered by
-              Razorpay
-
-            </p>
+                </p>
+              </>
+            )}
 
           </aside>
 

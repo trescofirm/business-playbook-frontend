@@ -276,7 +276,7 @@ function Refund() {
             <p>
               Razorpay states that merchant-initiated
               refunds are routed to the same payment
-              method used for the transaction. :contentReference[oaicite:1]{index=1}
+              method used for the transaction.
             </p>
           </section>
 
@@ -331,7 +331,7 @@ function Refund() {
             */}
 
             <a
-              href="mailto:support@businessplaybook.com"
+              href="mailto:lakshaymittal1805@gmail.com"
               className="legal-email"
             >
               <Mail size={16} />

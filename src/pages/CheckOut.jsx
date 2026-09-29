@@ -1800,9 +1800,7 @@ function Checkout() {
                             item.image ||
                             item.cover
                           }
-                          alt={
-                            item.title
-                          }
+                          alt={`${item.title} book cover`}
                         />
 
                       </div>

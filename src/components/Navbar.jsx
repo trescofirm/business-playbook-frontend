@@ -306,12 +306,10 @@ function Navbar() {
           >
 
             <button
-              onClick={() =>
-                scrollTo("pricing")
-              }
+              onClick={() => navigate("/books")}
               type="button"
             >
-              THE BOOKS
+              BOOKS
             </button>
 
 
@@ -482,13 +480,14 @@ function Navbar() {
             ================================================= */}
 
             <button
-              onClick={() =>
-                scrollTo("pricing")
-              }
+              onClick={() => {
+              setMenuOpen(false);
+              navigate("/books");
+            }}
               type="button"
             >
               <span>
-                THE BOOKS
+                BOOKS
               </span>
 
               <ArrowUpRight
@@ -739,7 +738,9 @@ function Navbar() {
                         {item.image && (
                           <img
                             src={item.image}
-                            alt={item.title}
+                            alt={`${item.title} book cover`}
+                            width="70"
+                            height="90"
                           />
                         )}
 

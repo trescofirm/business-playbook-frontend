@@ -197,9 +197,7 @@ function Footer() {
 
 
           <button
-            onClick={() =>
-              scrollTo("pricing")
-            }
+            onClick={() => navigate("/books")}
             type="button"
           >
             The Books

@@ -4,9 +4,13 @@ import {
   ShoppingBag,
 } from "lucide-react";
 
+import { trackAddToCart } from "../utils/analytics";
+
+
 import { useCart } from "../context/CartContext";
 import { books } from "../data/content";
 
+import { Link } from "react-router-dom";
 /* =========================================================
    PRICE FORMATTER
 ========================================================= */
@@ -47,6 +51,8 @@ function Pricing() {
 
       description: book.description,
     });
+
+    trackAddToCart(book);
 
     /* Open cart drawer */
 
@@ -115,20 +121,23 @@ function Pricing() {
               )}
 
               {/* =========================================
-    BOOK COVER
-========================================= */}
+                    BOOK COVER
+                ========================================= */}
 
-<div className="price-book-image">
-  <img
-    src={
-      index === 0
-        ? book.images?.cover
-        : book.images?.mockup
-    }
-    alt={`${book.title} book`}
-    loading="lazy"
-  />
-</div>
+                <div className="price-book-image">
+                  <Link
+                    to={`/books/${book.id}`}
+                    aria-label={`View ${book.title}`}
+                  >
+                    <img
+                      src={ index === 0 ? book.images?.cover : book.images?.mockup }
+                      alt={ index === 0 ? `${book.title} book cover` : `${book.title} book mockup` }
+                      width="280"
+                      height="394"
+                      loading="lazy"
+                    />
+                  </Link>
+                </div>
 
               {/* =========================================
                   BOOK TYPE + CATEGORY
@@ -151,7 +160,12 @@ function Pricing() {
               ========================================= */}
 
               <h3>
-                {book.title}
+                <Link
+                  to={`/books/${book.id}`}
+                  className="book-card-title-link"
+                >
+                  {book.title}
+                </Link>
               </h3>
 
               {/* =========================================

@@ -10,12 +10,18 @@ import Testimonials from "./components/Testimonials";
 import FAQ from "./components/FAQ";
 import Footer from "./components/Footer";
 
+import OrganizationSchema from "./components/OrganizationSchema";
+import WebSiteSchema from "./components/WebSiteSchema";
+
 import Checkout from "./pages/Checkout";
 import Terms from "./pages/Terms";
 import Privacy from "./pages/Privacy";
 import Refund from "./pages/Refund";
 import FinalCTA from "./components/FinalCTA";
 
+import BookPage from "./pages/BookPage";
+
+import Books from "./pages/Books";
 
 // =========================================================
 // HOME PAGE
@@ -24,6 +30,9 @@ import FinalCTA from "./components/FinalCTA";
 function Home() {
   return (
     <div className="site">
+
+      <OrganizationSchema />
+      <WebSiteSchema />
 
       {/* NAVBAR */}
       <Navbar />
@@ -80,6 +89,15 @@ function App() {
         element={<Home />}
       />
 
+      <Route
+        path="/books/:slug"
+        element={<BookPage />}
+      />
+
+      <Route 
+        path="/books" 
+        element={<Books />} 
+      />
 
       {/* ===================================================
           CHECKOUT
@@ -108,6 +126,11 @@ function App() {
       <Route
         path="/refund"
         element={<Refund />}
+      />
+
+      <Route
+        path="*"
+        element={<NotFound />}
       />
 
     </Routes>

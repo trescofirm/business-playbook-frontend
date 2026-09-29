@@ -10838,6 +10838,18 @@ input:focus-visible {
 }
 
 
+/* Added a new one here to preserves the existing visual designs */
+.price-book-title-link {
+  display: block;
+  color: inherit;
+  text-decoration: none;
+}
+
+.price-book-title-link:hover {
+  color: inherit;
+  text-decoration: none;
+}
+
 /* =========================================================
    AUTHOR
 ========================================================= */

@@ -132,13 +132,13 @@ function Hero() {
             }}
           >
             <span>
-              Three Books.
+              Self-Improvement
             </span>
 
             <em>
-              One Complete
+              Build Confidence,
               <br />
-              Life Upgrade.
+              Focus, Discipline & Personal Growth.
             </em>
           </motion.h1>
 
@@ -320,7 +320,10 @@ function Hero() {
           >
             <img
               src={book1?.images?.cover}
-              alt={book1?.title || "How to Attract Women"}
+              alt={ book1?.title ? `${book1.title} book cover` : "How to Attract Women book cover" }
+              width="270"
+              height="395"
+              fetchpriority="high"
               draggable="false"
             />
           </motion.div>
@@ -348,10 +351,10 @@ function Hero() {
           >
             <img
               src={book2?.images?.cover}
-              alt={
-                book2?.title ||
-                "30 Day Dopamine Detox Workbook"
-              }
+              alt={ book2?.title ? `${book2.title} book cover` : "30 Day Dopamine Detox Workbook book cover" }
+              width="300"
+              height="430"
+              fetchpriority="high"
               draggable="false"
             />
           </motion.div>
@@ -379,10 +382,10 @@ function Hero() {
           >
             <img
               src={book3?.images?.cover}
-              alt={
-                book3?.title ||
-                "How to Unlock Your Focus"
-              }
+              alt={ book3?.title ? `${book3.title} book cover` : "How to Unlock Your Focus book cover" }
+              width="270"
+              height="395"
+              fetchpriority="high"
               draggable="false"
             />
           </motion.div>

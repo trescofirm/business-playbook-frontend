@@ -27,14 +27,14 @@ export const books = [
   {
     id: "how-to-attract-women",
 
-    subtitle: "A Step-by-Step Guide for Men Starting at Ground Zero",
-
     title: "How to Attract Women",
 
     subtitle:
       "If You Have Zero Options and Are Starting at Ground Zero",
 
     category: "CONFIDENCE",
+
+    genre: "Self-Help",
 
     type: "E-BOOK",
 
@@ -54,6 +54,12 @@ export const books = [
 
     available: true,
 
+    currency: "USD",
+
+    rating: 4.2,
+    
+    purchaseCount: 66,
+
     features: [
       "Instant PDF delivery",
       "One-time purchase",
@@ -65,33 +71,50 @@ export const books = [
         "How to Attract Women | Confidence, Social Skills & Genuine Connection",
       description:
         "A practical guide for men starting at ground zero: build confidence, social skills and a real social circle. Instant PDF download.",
+      
+      primaryTopic: "Confidence & Social Skills",
+
+      secondaryTopics: [
+        "Social Confidence",
+        "Communication Skills",
+        "Building a Social Circle",
+        "Confidence in Social Situations",
+        "Genuine Connections",
+      ],
+      
+      searchIntent: [
+        "informational",
+        "commercial",
+      ],
       keywords: [
         "how to attract women",
-        "how to attract women book",
-        "dating advice for men",
-        "confidence with women",
+        "how to build confidence with women",
         "social confidence for men",
-        "dating confidence",
         "social skills for men",
         "how to meet women",
-        "build social confidence",
-        "social circle for men",
-        "dating self improvement",
-        "psychology of attraction",
-        "dating and confidence",
-        "real world dating advice"
-      ]
+        "how to improve social confidence",
+        "confidence and communication",
+      ],
     },
 
     seoContent: {
-      intro: "",
+      intro:
+        "Building confidence and stronger social connections starts with understanding how you communicate, how you present yourself, and how you approach real conversations.",
+
       problem: {
-        heading: "",
-        paragraphs: [],
+        heading: "Why Confidence and Social Connection Can Feel Difficult",
+        paragraphs: [
+          "Many people struggle to start conversations, meet new people, or build a social circle because they overthink how they will be perceived. This can make ordinary social situations feel more difficult than they need to be.",
+          "Confidence is not simply about appearing outgoing. It develops through better communication, greater self-awareness, and repeated experience in real social situations.",
+        ],
       },
+    
       outcome: {
-        heading: "",
-        paragraphs: [],
+        heading: "What You Can Expect",
+        paragraphs: [
+          "This guide focuses on practical approaches to improving confidence, conversation skills, and social interaction rather than relying on complicated theories.",
+          "The goal is to help you approach social situations with a clearer mindset, communicate more naturally, and build genuine connections over time.",
+        ],
       },
     },
 
@@ -240,7 +263,14 @@ export const books = [
         answer:
           "No. Dating and attraction depend on many individual and situational factors. The book provides ideas, frameworks and actions for personal and social development rather than guaranteeing a particular romantic outcome."
       }
-    ]
+    ],
+
+    relatedGuides: [
+      {
+        slug: "actual-guide-slug",
+        title: "Actual Guide Title",
+      },
+    ],
   },
 
 
@@ -251,14 +281,14 @@ export const books = [
   {
     id: "dopamine-detox",
 
-    subtitle: "Focus and Control for Your Exam Period",
-
     title: "30 Day Dopamine Detox Workbook",
 
     subtitle:
       "Focus and Control for Your Exam Period",
 
     category: "DISCIPLINE",
+
+    genre: "Self-Help",
 
     type: "WORKBOOK",
 
@@ -268,7 +298,7 @@ export const books = [
     author: "",
 
     images: {
-      cover: "/images/books/dopamine-detox.jpeg",
+      cover: "/images/books/book2-mockup.jpeg",
       mockup: "/images/books/book2-mockup.jpeg",
     },
 
@@ -286,33 +316,78 @@ export const books = [
 
     available: true,
 
+    currency: "USD",
+
+    rating: 3.9,
+    
+    purchaseCount: 32,
+
     seo: {
       title:
         "30 Day Dopamine Detox Workbook | Focus & Study Habits",
       description:
-        "A 30-day workbook to cut phone distractions, set social media limits and build exam-period study focus. Instant PDF download.",
+        "A practical 30-day workbook for reducing phone distractions, improving digital habits and building more consistent study focus.",
+      
+      primaryTopic: "Dopamine Detox & Digital Distraction",
+
+      secondaryTopics: [
+        "Dopamine Detox",
+        "Digital Detox",
+        "Screen Time",
+        "Phone Distractions",
+        "Productivity",
+        "Attention",
+        "Study Focus",
+      ],
+    
+      searchIntent: [
+        "informational",
+        "commercial",
+      ],
+      
       keywords: [
         "30 day dopamine detox workbook",
         "dopamine detox workbook",
         "dopamine detox for students",
-        "dopamine detox for exams",
-        "focus workbook for students",
-        "study focus workbook",
-        "30 day focus challenge",
         "digital detox workbook",
-        "social media detox workbook",
-        "reduce phone distractions",
-        "study habits workbook",
-        "self discipline workbook",
-        "productivity workbook",
-        "exam productivity workbook",
-        "focus and concentration workbook",
-        "daily habit planner",
-        "30 day habit challenge",
-        "student productivity ebook",
-        "digital detox for students"
-      ]
+        "how to reduce phone distractions",
+        "how to reduce screen time",
+        "study focus workbook",
+      ],
     },
+
+    seoContent: {
+      intro:
+        "A practical 30-day approach to reducing digital distractions, becoming more intentional with your attention, and building routines that support better focus.",
+
+      problem: {
+        heading: "Why Digital Distractions Make Focus Difficult",
+        paragraphs: [
+          "Phones, social media, notifications, screen time, and constantly changing digital content can make it difficult to stay focused on tasks that require sustained attention.",
+          "When distractions become part of an everyday routine, studying, reading, working, or completing important tasks can become harder because attention is repeatedly pulled toward something else.",
+        ],
+      },
+    
+      outcome: {
+        heading: "What You Can Expect",
+        paragraphs: [
+          "The workbook provides a structured 30-day approach to becoming more intentional about digital habits and reducing unnecessary sources of distraction.",
+          "By working through the exercises and routines, you can identify distracting patterns, create clearer boundaries around digital use, and develop habits that support more consistent focus.",
+        ],
+      },
+    },
+
+    relatedContent: [
+      {
+        target: "unlock-focus",
+      
+        before:
+          "If improving your focus and concentration is your main goal, explore ",
+      
+        after:
+          " for practical strategies for reducing distractions and protecting your attention.",
+      },
+    ],
 
     about:
       "30 Day Dopamine Detox Workbook: Focus and Control for Your Exam Period is a practical 30-day digital workbook created for students and anyone who wants to reduce distractions, improve consistency, and build better daily study habits. Instead of long theoretical explanations, the workbook focuses on simple actions that can be followed every day. Each day combines a short morning routine, a clearly defined main task, a focused work session, a distraction-control challenge, social media limits, and an evening reflection. The workbook uses the popular dopamine detox concept as a practical framework for reducing excessive instant-gratification and distraction habits rather than as a literal process of removing dopamine from the body.",
@@ -461,7 +536,14 @@ export const books = [
         answer:
           "Yes. The workbook can be opened as a PDF on a compatible phone, tablet, laptop, or computer."
       }
-    ]
+    ],
+
+    relatedGuides: [
+      {
+        slug: "actual-guide-slug",
+        title: "Actual Guide Title",
+      },
+    ],
   },
 
   // =======================================================
@@ -480,6 +562,8 @@ export const books = [
 
     category: "MINDSET",
 
+    genre: "Personal Development",
+
     type: "E-BOOK",
 
     description:
@@ -488,7 +572,7 @@ export const books = [
     author: "Vishal Kumar",
 
     images: {
-      cover: "/images/books/unlock-focus-cover.jpeg",
+      cover: "/images/books/unlock-focus.jpeg",
       mockup: "/images/books/unlock-focus.jpeg",
     },
 
@@ -506,32 +590,78 @@ export const books = [
 
     available: true,
 
+    currency: "USD",
+
+    rating: 4.3,
+    
+    purchaseCount: 44,
+
     seo: {
       title:
         "How to Unlock Your Focus: A Guide to Beating Distraction",
-      description:
-        "Understand why you get distracted, then use deep work, digital detox and notification strategies to concentrate. Instant PDF download.",
+       description:
+        "A practical guide to improving concentration, reducing distractions and building better focus through structured strategies.",
+
+      primaryTopic: "Focus & Productivity",
+
+      secondaryTopics: [
+        "Focus",
+        "Concentration",
+        "Productivity",
+        "Attention Management",
+        "Digital Distraction",
+        "Deep Work",
+        "Time Management",
+      ],
+    
+      searchIntent: [
+        "informational",
+        "commercial",
+      ], 
       keywords: [
-        "how to unlock your focus",
-        "focus and concentration",
-        "deep concentration",
         "how to improve focus",
+        "how to improve concentration",
+        "how to stop distractions",
         "focus book",
-        "book about distraction",
-        "focus workbook",
-        "digital distraction",
-        "digital detox",
-        "attention management",
+        "focus and concentration",
         "deep work",
-        "study focus",
-        "concentration techniques",
-        "focus styles",
-        "productivity and focus",
-        "stop distractions",
-        "notification management",
-        "multitasking and attention"
-      ]
+        "attention management",
+        "digital distraction",
+      ],
     },
+
+    seoContent: {
+      intro:
+        "A practical guide to understanding distraction, improving concentration, and creating an environment that makes focused work easier.",
+        
+      problem: {
+        heading: "Why Staying Focused Can Be Difficult",
+        paragraphs: [
+          "Modern work and study environments are filled with interruptions, notifications, competing tasks, and easy access to digital entertainment. These distractions can make it difficult to maintain attention on one important task.",
+          "Trying to force concentration without changing the habits and environment around you often makes focused work harder. Better focus requires understanding what repeatedly breaks your attention and creating systems that reduce those interruptions.",
+        ],
+      },
+    
+      outcome: {
+        heading: "What You Can Expect",
+        paragraphs: [
+          "This guide introduces practical strategies for reducing distractions, improving your working environment, and developing more consistent deep-work habits.",
+          "The focus is on actionable changes that can help you protect your attention, structure your work sessions, and make meaningful progress on important tasks.",
+        ],
+      },
+    },
+
+    relatedContent: [
+      {
+        target: "dopamine-detox",
+      
+        before:
+          "If digital distractions and phone use are making it difficult to concentrate, explore the ",
+      
+        after:
+          " for a structured approach to reducing distractions and building better focus habits.",
+      },
+    ],
 
     about:
       "How to Unlock Your Focus: Overcoming Distraction and Achieving Deep Concentration is a theory-led guide to understanding why concentration has become difficult in a highly connected, notification-driven world. Rather than focusing mainly on a daily productivity routine, this book explores what happens in the mind when attention is repeatedly interrupted by smartphones, social media, multitasking, notifications, information overload and other sources of stimulation. It combines concepts from psychology, neuroscience and attention research with practical frameworks such as focus assessments, personalized focus paths, distraction-free environments, digital-detox strategies, notification management, Pomodoro-style work, mindfulness and progress tracking.",
@@ -695,7 +825,14 @@ export const books = [
         answer:
           "No. The guide provides concepts, strategies and self-assessment tools, but individual results can vary depending on habits, environment, goals and other factors."
       }
-    ]
+    ],
+    
+    relatedGuides: [
+      {
+        slug: "actual-guide-slug",
+        title: "Actual Guide Title",
+      },
+    ],
   },
 ];
 
@@ -729,41 +866,73 @@ export const collection = {
 // =========================================================
 // TESTIMONIALS
 // =========================================================
-
 export const testimonials = [
   {
-    id: 1,
+    id: "review-1",
 
-    name: "John Mitchell",
+    name: "Martin",
 
-    role: "Entrepreneur",
+    // role: "Entrepreneur",
 
     quote:
-      "The short lessons make it incredibly easy to pick an idea and actually use it.",
+      "This book is very well researched and dense and really changed my habits and I too as a software engineer value deep work",
+
+    rating: 4.5,
   },
 
   {
     id: 2,
 
-    name: "Michael Richardson",
+    name: "J. Richardson",
 
-    role: "Student",
+    // role: "Student",
 
     quote:
-      "I like that I don't have to spend hours reading before finding something useful.",
+      "Best money I spent. This book will change your life but only if you act.",
+  
+    rating: 5,
+  
   },
 
   {
     id: 3,
 
-    name: "Daniel Wilson",
+    name: "Vaibhav Shrivastava",
 
-    role: "Professional",
+    // role: "Professional",
 
     quote:
-      "Simple, practical and something I can come back to whenever I need a reset.",
+      "I like the book..Very useful for self development 👍",
+  },
+
+  {
+    id: 4,
+
+    name: "Daniel . H",
+
+    // role: "Professional",
+
+    quote:
+      "Interesting yet easy to read book. I was slightly worried it would be too analytical or too dry to read but it was better than expected. Gave me good ideas on how to build more confidence in life so the book would actually stick on teaching about all focusing on yourself. ",
+  
+    rating: 4.5,
+  
+  },
+
+  {
+    id: 5,
+
+    name: "Varsh Prasad",
+
+    // role: "Professional",
+
+    quote:
+      "Very good book...must read.",
+
+    rating: 3.5,
   },
 ];
+
 
 
 // =========================================================

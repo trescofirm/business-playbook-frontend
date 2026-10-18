@@ -1,49 +1,27 @@
+
 import { motion } from "framer-motion";
 
 import {
-  ArrowUpRight,
+  ArrowRight,
   Zap,
   BookOpen,
   Globe,
   ShoppingBag,
+  Download,
+  ShieldCheck,
 } from "lucide-react";
 
 import { useCart } from "../context/CartContext";
 import { books, collection } from "../data/content";
 
-/* =========================================================
-   HERO
-========================================================= */
-
 function Hero() {
   const { addToCart } = useCart();
 
-  /* =========================================================
-     SCROLL
-  ========================================================= */
-
-  const scrollTo = (id) => {
-    document.getElementById(id)?.scrollIntoView({
-      behavior: "smooth",
-      block: "start",
-    });
-  };
-
-  /* =========================================================
-     THREE BOOK COLLECTION
-
-     Uses the SAME book data from content.js
-  ========================================================= */
-
   const collectionBooks = books.slice(0, 3);
-
-  /* =========================================================
-     GET ALL THREE BOOKS
-  ========================================================= */
 
   const handleBuyAllBooks = () => {
     collectionBooks.forEach((book) => {
-      if (!book.available || book.price === null) {
+      if (!book.available || book.price == null) {
         return;
       }
 
@@ -57,368 +35,202 @@ function Hero() {
       });
     });
 
-    setTimeout(() => {
+    window.setTimeout(() => {
       window.dispatchEvent(new Event("cart:open"));
     }, 150);
   };
 
-  /* =========================================================
-     BOOK DATA
-  ========================================================= */
+  const scrollToBooks = () => {
+    document.getElementById("pricing")?.scrollIntoView({
+      behavior: "smooth",
+      block: "start",
+    });
+  };
 
-  const book1 = books[0];
-  const book2 = books[1];
-  const book3 = books[2];
+  const bookPanels = [
+    {
+      book: collectionBooks[0],
+      className: "hero-book-panel--one",
+      fallback: "How to Attract Women book cover",
+    },
+    {
+      book: collectionBooks[1],
+      className: "hero-book-panel--two",
+      fallback: "30 Day Dopamine Detox Workbook cover",
+    },
+    {
+      book: collectionBooks[2],
+      className: "hero-book-panel--three",
+      fallback: "How to Unlock Your Focus book cover",
+    },
+  ];
 
   return (
     <section id="home" className="hero">
       <div className="hero-container">
-
-        {/* =================================================
-            LEFT CONTENT
-        ================================================= */}
-
-        <div className="hero-copy">
-
-          {/* =================================================
-              EYEBROW
-          ================================================= */}
-
+        <div className="hero-main">
+          {/* LEFT: Existing homepage copy */}
           <motion.div
-            className="hero-eyebrow"
-            initial={{
-              opacity: 0,
-              y: -15,
-            }}
-            animate={{
-              opacity: 1,
-              y: 0,
-            }}
-            transition={{
-              duration: 0.7,
-            }}
+            className="hero-copy"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.65, ease: "easeOut" }}
           >
-            <span className="eyebrow-line" />
+            <div className="hero-eyebrow">
+              <span className="hero-eyebrow-dot" />
+              <span>Self-Improvement</span>
+            </div>
 
-            <span>
-              THREE PRACTICAL BOOKS
-            </span>
-
-            <span className="hero-dot">
-              •
-            </span>
-
-            <span>
-              DIGITAL COLLECTION
-            </span>
-          </motion.div>
-
-          {/* =================================================
-              MAIN HEADING
-          ================================================= */}
-
-          <motion.h1
-            className="hero-title"
-            initial={{
-              opacity: 0,
-              y: 30,
-            }}
-            animate={{
-              opacity: 1,
-              y: 0,
-            }}
-            transition={{
-              duration: 0.9,
-            }}
-          >
-            <span>
-              Self-Improvement
-            </span>
-
-            <em>
-              Build Confidence,
-              <br />
-              Focus, Discipline & Personal Growth.
-            </em>
-          </motion.h1>
-
-          {/* =================================================
-              DESCRIPTION
-          ================================================= */}
-
-          <motion.p
-            className="hero-description"
-            initial={{
-              opacity: 0,
-              y: 20,
-            }}
-            animate={{
-              opacity: 1,
-              y: 0,
-            }}
-            transition={{
-              duration: 0.8,
-              delay: 0.2,
-            }}
-          >
-            Build confidence. Take back your focus.
-            Develop stronger habits and a better mindset.
-            Three practical playbooks designed to be{" "}
-            <strong>used</strong>, not just finished.
-          </motion.p>
-
-          {/* =================================================
-              BUTTONS
-          ================================================= */}
-
-          <motion.div
-            className="hero-buttons"
-            initial={{
-              opacity: 0,
-              y: 20,
-            }}
-            animate={{
-              opacity: 1,
-              y: 0,
-            }}
-            transition={{
-              duration: 0.7,
-              delay: 0.35,
-            }}
-          >
-
-            {/* =============================================
-                BUY ALL THREE
-            ============================================= */}
-
-            <button
-              className="hero-buy"
-              onClick={handleBuyAllBooks}
-              type="button"
-            >
-              <ShoppingBag size={17} />
-
-              <span>
-                GET ALL 3 BOOKS — $45
+            <h1 className="hero-title">
+              <span className="hero-title-line">
+                Build Confidence,
               </span>
 
-              <del>
-                $51.97
-              </del>
-
-              <ArrowUpRight size={17} />
-            </button>
-
-            {/* =============================================
-                EXPLORE
-            ============================================= */}
-
-            <button
-              className="hero-explore"
-              onClick={() => scrollTo("pricing")}
-              type="button"
-            >
-              <span>
-                EXPLORE THE BOOKS
+              <span className="hero-title-line">
+                Focus, Discipline &
               </span>
 
-              <ArrowUpRight size={17} />
-            </button>
+              <span className="hero-title-line hero-title-accent">
+                Personal Growth.
+              </span>
+            </h1>
 
-          </motion.div>
+            <p className="hero-description">
+              Build confidence. Take back your focus. Develop stronger
+              habits and a better mindset. Three practical playbooks
+              designed to be <strong>used</strong>, not just finished.
+            </p>
 
-          {/* =================================================
-              BENEFITS
-          ================================================= */}
+            <div className="hero-buttons">
+              <button
+                className="hero-buy"
+                onClick={handleBuyAllBooks}
+                type="button"
+              >
+                <ShoppingBag size={17} strokeWidth={1.8} />
 
-          <motion.div
-            className="hero-benefits"
-            initial={{
-              opacity: 0,
-              y: 15,
-            }}
-            animate={{
-              opacity: 1,
-              y: 0,
-            }}
-            transition={{
-              duration: 0.7,
-              delay: 0.5,
-            }}
-          >
+                <span>
+                  GET ALL 3 BOOKS — $
+                  {Number(collection?.price ?? 45).toFixed(0)}
+                </span>
 
-            <div>
-              <Zap size={15} />
+                <del>
+                  $
+                  {Number(
+                    collection?.individualTotal ?? 51.97
+                  ).toFixed(2)}
+                </del>
 
+                <ArrowRight size={17} strokeWidth={1.8} />
+              </button>
+
+              <button
+                className="hero-explore"
+                onClick={scrollToBooks}
+                type="button"
+              >
+                <span>EXPLORE THE BOOKS</span>
+                <ArrowRight size={16} strokeWidth={1.8} />
+              </button>
+            </div>
+
+            <div className="hero-inline-benefits">
               <span>
+                <Zap size={14} />
                 Instant delivery
               </span>
-            </div>
-
-            <div>
-              <BookOpen size={15} />
 
               <span>
+                <BookOpen size={14} />
                 PDF + Digital
               </span>
-            </div>
-
-            <div>
-              <Globe size={15} />
 
               <span>
+                <Globe size={14} />
                 Available worldwide
               </span>
             </div>
-
           </motion.div>
 
+          {/* RIGHT: Real book covers inside warm display panels */}
+          <motion.div
+            className="hero-books"
+            initial={{ opacity: 0, x: 24 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ duration: 0.75, delay: 0.12, ease: "easeOut" }}
+            aria-label="Explore the three Business Playbook books"
+          >
+            {bookPanels.map(({ book, className, fallback }, index) => (
+              <motion.div
+                className={`hero-book-panel ${className}`}
+                key={book?.id ?? className}
+                initial={{ opacity: 0, y: 18 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{
+                  duration: 0.55,
+                  delay: 0.2 + index * 0.12,
+                  ease: "easeOut",
+                }}
+              >
+                <div className="hero-book-panel-shape" />
+
+                {book?.images?.cover ? (
+                  <img
+                    className="hero-book-image"
+                    src={book.images.cover}
+                    alt={book.title ? `${book.title} book cover` : fallback}
+                    width="300"
+                    height="430"
+                    loading={index === 0 ? "eager" : "lazy"}
+                    fetchPriority={index === 0 ? "high" : "auto"}
+                    draggable="false"
+                  />
+                ) : (
+                  <div className="hero-book-placeholder" aria-hidden="true">
+                    <BookOpen size={38} strokeWidth={1.2} />
+                    <span>Business Playbook</span>
+                  </div>
+                )}
+              </motion.div>
+            ))}
+          </motion.div>
         </div>
 
-        {/* =================================================
-            RIGHT SIDE — THREE BOOKS
-        ================================================= */}
+        {/* BOTTOM: Three benefits across the hero */}
+        <div className="hero-benefit-strip">
+          <div className="hero-benefit-item">
+            <span className="hero-benefit-icon">
+              <BookOpen size={21} strokeWidth={1.7} />
+            </span>
 
-        <motion.div
-          className="hero-books"
-          initial={{
-            opacity: 0,
-            x: 80,
-          }}
-          animate={{
-            opacity: 1,
-            x: 0,
-          }}
-          transition={{
-            duration: 1,
-            delay: 0.25,
-          }}
-        >
+            <span className="hero-benefit-copy">
+              <strong>THREE PRACTICAL BOOKS</strong>
+              <span>Actionable ideas for real life</span>
+            </span>
+          </div>
 
-          {/* =================================================
-              BOOK 1
-              IMPORTANT:
-              Uses content.js image
-          ================================================= */}
+          <div className="hero-benefit-item">
+            <span className="hero-benefit-icon">
+              <Download size={21} strokeWidth={1.7} />
+            </span>
 
-          <motion.div
-            className="hero-book hero-book-1"
-            initial={{
-              opacity: 0,
-              y: 35,
-              rotate: -10,
-            }}
-            animate={{
-              opacity: 1,
-              y: 0,
-              rotate: -8,
-            }}
-            transition={{
-              duration: 0.8,
-              delay: 0.45,
-            }}
-          >
-            <img
-              src={book1?.images?.cover}
-              alt={ book1?.title ? `${book1.title} book cover` : "How to Attract Women book cover" }
-              width="270"
-              height="395"
-              fetchpriority="high"
-              draggable="false"
-            />
-          </motion.div>
+            <span className="hero-benefit-copy">
+              <strong>INSTANT DIGITAL ACCESS</strong>
+              <span>Start reading immediately</span>
+            </span>
+          </div>
 
-          {/* =================================================
-              BOOK 2 — CENTER
-          ================================================= */}
+          <div className="hero-benefit-item">
+            <span className="hero-benefit-icon">
+              <ShieldCheck size={21} strokeWidth={1.7} />
+            </span>
 
-          <motion.div
-            className="hero-book hero-book-2"
-            initial={{
-              opacity: 0,
-              y: 45,
-              scale: 0.95,
-            }}
-            animate={{
-              opacity: 1,
-              y: 0,
-              scale: 1,
-            }}
-            transition={{
-              duration: 0.85,
-              delay: 0.6,
-            }}
-          >
-            <img
-              src={book2?.images?.cover}
-              alt={ book2?.title ? `${book2.title} book cover` : "30 Day Dopamine Detox Workbook book cover" }
-              width="300"
-              height="430"
-              fetchpriority="high"
-              draggable="false"
-            />
-          </motion.div>
-
-          {/* =================================================
-              BOOK 3
-          ================================================= */}
-
-          <motion.div
-            className="hero-book hero-book-3"
-            initial={{
-              opacity: 0,
-              y: 35,
-              rotate: 10,
-            }}
-            animate={{
-              opacity: 1,
-              y: 0,
-              rotate: 8,
-            }}
-            transition={{
-              duration: 0.8,
-              delay: 0.75,
-            }}
-          >
-            <img
-              src={book3?.images?.cover}
-              alt={ book3?.title ? `${book3.title} book cover` : "How to Unlock Your Focus book cover" }
-              width="270"
-              height="395"
-              fetchpriority="high"
-              draggable="false"
-            />
-          </motion.div>
-
-          {/* =================================================
-              GOLD GLOW
-          ================================================= */}
-
-          <div className="hero-books-glow" />
-
-          {/* =================================================
-              COLLECTION LABEL
-          ================================================= */}
-
-          <motion.div
-            className="hero-collection-badge"
-            initial={{
-              opacity: 0,
-              scale: 0.8,
-            }}
-            animate={{
-              opacity: 1,
-              scale: 1,
-            }}
-            transition={{
-              duration: 0.6,
-              delay: 1,
-            }}
-          >
-          </motion.div>
-
-        </motion.div>
-
+            <span className="hero-benefit-copy">
+              <strong>SECURE CHECKOUT</strong>
+              <span>Safe and reliable payments</span>
+            </span>
+          </div>
+        </div>
       </div>
     </section>
   );

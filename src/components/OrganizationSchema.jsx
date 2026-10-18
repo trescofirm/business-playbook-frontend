@@ -1,10 +1,24 @@
+import { SITE_URL } from "../utils/seo";
+
 const OrganizationSchema = () => {
   const schema = {
     "@context": "https://schema.org",
+
     "@type": "Organization",
+
+    "@id": `${SITE_URL}/#organization`,
+
     name: "Business Playbook",
-    url: "https://tresco.firm.in/",
-    logo: "https://tresco.firm.in/images/logo.png",
+
+    url: SITE_URL,
+
+    logo: {
+      "@type": "ImageObject",
+      url: `${SITE_URL}/images/logo.png`,
+    },
+
+    description:
+      "Business Playbook publishes practical digital books and guides focused on confidence, focus, habits and personal growth.",
   };
 
   return (

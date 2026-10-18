@@ -1,8 +1,17 @@
-import { useNavigate } from "react-router-dom";
 import {
-  ArrowUpRight,
-  Mail,
+  useNavigate,
+  Link,
+} from "react-router-dom";
+
+import {
+  BookOpen,
+  UserRound,
+  CircleHelp,
+  Star,
+  FileText,
   ShieldCheck,
+  RefreshCw,
+  Mail,
 } from "lucide-react";
 
 function Footer() {
@@ -98,46 +107,7 @@ function Footer() {
   };
 
   return (
-    <footer className="footer">
-
-      {/* =====================================
-          FOOTER CTA
-      ===================================== */}
-
-      <div className="footer-cta">
-
-        <div className="footer-cta-content">
-
-          <div className="footer-cta-copy">
-
-            <p className="footer-eyebrow">
-              BUILD YOUR PLAYBOOK
-            </p>
-
-            <h2>
-              Read less.
-              <br />
-              <i>Apply more.</i>
-            </h2>
-
-          </div>
-
-          <button
-            className="footer-cta-button"
-            onClick={handleExploreBooks}
-            type="button"
-          >
-            <span>
-              EXPLORE THE BOOKS
-            </span>
-
-            <ArrowUpRight size={17} />
-          </button>
-
-        </div>
-
-      </div>
-
+    <footer className="footer footer-dark-redesign">
 
       {/* =====================================
           MAIN FOOTER
@@ -158,13 +128,11 @@ function Footer() {
             aria-label="Go to Business Playbook home"
           >
 
-            <span className="footer-brand-mark">
-              BP
-            </span>
-
-            <span className="footer-brand-name">
-              BUSINESS PLAYBOOK
-            </span>
+            <img
+              src="/tresco-logo.png"
+              alt="TRESCO"
+              className="tresco-navbar-logo-image"
+            />
 
           </button>
 
@@ -196,41 +164,36 @@ function Footer() {
           </h3>
 
 
+          <Link to="/books" className="footer-icon-link">
+          <BookOpen />
+            <span>Books</span>
+          </Link>
+                  
           <button
-            onClick={() => navigate("/books")}
+            className="footer-icon-link"
+            onClick={() => scrollTo("author")}
             type="button"
           >
-            The Books
+            <UserRound />
+            <span>Author</span>
           </button>
-
-
+                  
           <button
-            onClick={() =>
-              scrollTo("author")
-            }
+            className="footer-icon-link"
+            onClick={() => scrollTo("faq")}
             type="button"
           >
-            Author
+            <CircleHelp />
+            <span>FAQ</span>
           </button>
-
-
+                  
           <button
-            onClick={() =>
-              scrollTo("faq")
-            }
+            className="footer-icon-link"
+            onClick={() => scrollTo("reviews")}
             type="button"
           >
-            FAQ
-          </button>
-
-
-          <button
-            onClick={() =>
-              scrollTo("reviews")
-            }
-            type="button"
-          >
-            Reviews
+            <Star />
+            <span>Reviews</span>
           </button>
 
         </div>
@@ -240,42 +203,35 @@ function Footer() {
             LEGAL
         =================================== */}
 
-        <div className="footer-section">
-
-          <h3>
-            LEGAL
-          </h3>
-
+        <div className="footer-section footer-legal">
+          <h3>LEGAL</h3>
 
           <button
-            onClick={() =>
-              goToLegalPage("/terms")
-            }
+            className="footer-icon-link"
+            onClick={() => goToLegalPage("/terms")}
             type="button"
           >
-            Terms & Conditions
+            <FileText aria-hidden="true" />
+            <span>Terms &amp; Conditions</span>
           </button>
-
 
           <button
-            onClick={() =>
-              goToLegalPage("/privacy")
-            }
+            className="footer-icon-link"
+            onClick={() => goToLegalPage("/privacy")}
             type="button"
           >
-            Privacy Policy
+            <ShieldCheck aria-hidden="true" />
+            <span>Privacy Policy</span>
           </button>
-
 
           <button
-            onClick={() =>
-              goToLegalPage("/refund")
-            }
+            className="footer-icon-link"
+            onClick={() => goToLegalPage("/refund")}
             type="button"
           >
-            Refund Policy
+            <RefreshCw aria-hidden="true" />
+            <span>Refund Policy</span>
           </button>
-
         </div>
 
 

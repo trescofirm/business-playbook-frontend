@@ -19,6 +19,9 @@ import {
   collection,
 } from "../data/content";
 
+import { Link, useLocation, } from "react-router-dom";
+
+
 
 /* =========================================================
    COLLECTION PRICE
@@ -59,6 +62,10 @@ const INDIVIDUAL_TOTAL =
 function Navbar() {
   const navigate =
     useNavigate();
+
+  
+const location = useLocation();
+
 
   const {
     cartItems,
@@ -122,49 +129,85 @@ function Navbar() {
   }, []);
 
 
+  
+/* =====================================================
+   SCROLL TO HOMEPAGE SECTION AFTER ROUTE CHANGE
+===================================================== */
+
+useEffect(() => {
+  if (!location.hash) return;
+
+  const sectionId = decodeURIComponent(
+    location.hash.slice(1)
+  );
+
+  let attempts = 0;
+  let timer;
+
+  const findAndScroll = () => {
+    const section = document.getElementById(sectionId);
+
+    if (section) {
+      section.scrollIntoView({
+        behavior: "smooth",
+        block: "start",
+      });
+      return;
+    }
+
+    // Allow the homepage sections time to render.
+    if (attempts < 20) {
+      attempts += 1;
+      timer = setTimeout(findAndScroll, 100);
+    }
+  };
+
+  timer = setTimeout(findAndScroll, 100);
+
+  return () => clearTimeout(timer);
+}, [location.pathname, location.hash]);
+
+
   /* =====================================================
      LOCK BODY SCROLL
   ===================================================== */
 
-  useEffect(() => {
-    if (
-      menuOpen ||
-      cartOpen
-    ) {
-      document.body.style.overflow =
-        "hidden";
-    } else {
-      document.body.style.overflow =
-        "";
-    }
+useEffect(() => {
+  // Lock the page only when the mobile navigation is open.
+  // Opening the cart must NOT prevent background scrolling.
+  document.body.style.overflow = menuOpen ? "hidden" : "";
 
-    return () => {
-      document.body.style.overflow =
-        "";
-    };
-  }, [
-    menuOpen,
-    cartOpen,
-  ]);
+  return () => {
+    document.body.style.overflow = "";
+  };
+}, [menuOpen]);
 
 
   /* =====================================================
      SCROLL TO SECTION
   ===================================================== */
 
+  
   const scrollTo = (id) => {
     setMenuOpen(false);
 
-    setTimeout(() => {
-      document
-        .getElementById(id)
-        ?.scrollIntoView({
+    // If the section exists on the current page, scroll to it.
+    const currentSection = document.getElementById(id);
+
+    if (currentSection) {
+      setTimeout(() => {
+        currentSection.scrollIntoView({
           behavior: "smooth",
           block: "start",
         });
-    }, 50);
-  };
+      }, 50);
 
+      return;
+    }
+
+    // Otherwise, navigate to the homepage and target its section.
+    navigate(`/#${id}`);
+  };
 
   /* =====================================================
      OPEN CART
@@ -286,13 +329,13 @@ function Navbar() {
             type="button"
             aria-label="Go to home"
           >
-            <span className="brand-mark">
-              BP.
-            </span>
-
-            <span className="brand-name">
-              BUSINESS PLAYBOOK
-            </span>
+            <a href="/" className="navbar-logo tresco-navbar-logo" aria-label="TRESCO Home">
+              <img
+                src="/tresco-logo.png"
+                alt="TRESCO"
+                className="tresco-navbar-logo-image"
+              />
+            </a>
           </button>
 
 
@@ -305,12 +348,19 @@ function Navbar() {
             aria-label="Main navigation"
           >
 
-            <button
-              onClick={() => navigate("/books")}
-              type="button"
+            <Link
+              to="/books"
+              className="nav-link-button"
+              onClick={() => {
+                setMenuOpen(false);
+                window.scrollTo({
+                  top: 0,
+                  behavior: "instant",
+                });
+              }}
             >
               BOOKS
-            </button>
+            </Link>
 
 
             <button
@@ -321,6 +371,7 @@ function Navbar() {
             >
               AUTHOR
             </button>
+            
 
 
             <button
@@ -373,7 +424,7 @@ function Navbar() {
             =============================================== */}
 
             <button
-              className="nav-buy"
+              className="nav-buy nav-collection-cta"
               onClick={
                 handleBuyCollection
               }
@@ -478,24 +529,20 @@ function Navbar() {
             {/* =================================================
                 BOOKS
             ================================================= */}
-
-            <button
+            
+            <Link
+              to="/books"
               onClick={() => {
-              setMenuOpen(false);
-              navigate("/books");
-            }}
-              type="button"
+                setMenuOpen(false);
+                window.scrollTo({
+                  top: 0,
+                  behavior: "instant",
+                });
+              }}
             >
-              <span>
-                BOOKS
-              </span>
-
-              <ArrowUpRight
-                size={20}
-                aria-hidden="true"
-              />
-            </button>
-
+              <span>BOOKS</span>
+              <ArrowUpRight size={20} aria-hidden="true" />
+            </Link>
 
             {/* =================================================
                 AUTHOR
@@ -751,20 +798,41 @@ function Navbar() {
                           BOOK INFORMATION
                       ======================================= */}
 
+                      
+                      {/* BOOK INFORMATION */}
+
                       <div className="cart-item-info">
+                        {(() => {
+                          const book = books.find(
+                            (entry) => entry.id === item.id
+                          );
+                        
+                          return (
+                            <>
+                              <h3>{item.title}</h3>
+                          
+                              {book?.type && (
+                                <span className="cart-item-type">
+                                  {book.type}
+                                </span>
+                              )}
 
-                        <h3>
-                          {item.title}
-                        </h3>
-
-                        <span>
-                          $
-                          {formatPrice(
-                            item.price
-                          )}
-                        </span>
-
+                              <div className="cart-item-prices">
+                                <strong>
+                                  ${formatPrice(item.price)}
+                                </strong>
+                            
+                                {item.oldPrice != null && (
+                                  <del>
+                                    ${formatPrice(item.oldPrice)}
+                                  </del>
+                                )}
+                              </div>
+                            </>
+                          );
+                        })()}
                       </div>
+
 
 
                       {/* =======================================

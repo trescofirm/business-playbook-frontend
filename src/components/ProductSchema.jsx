@@ -1,6 +1,8 @@
-import { getBookUrl } from "../utils/seo";
+import { SITE_URL, getBookUrl } from "../utils/seo";
 
 const ProductSchema = ({ book }) => {
+  if (!book) return null;
+
   const productUrl = getBookUrl(book.id);
 
   const getAbsoluteImageUrl = (image) => {
@@ -8,7 +10,7 @@ const ProductSchema = ({ book }) => {
 
     return image.startsWith("http")
       ? image
-      : `https://tresco.firm.in${image}`;
+      : `${SITE_URL}${image}`;
   };
 
   const coverImage = getAbsoluteImageUrl(
@@ -37,8 +39,15 @@ const ProductSchema = ({ book }) => {
 
     url: productUrl,
 
+    category:
+      book.seo?.primaryTopic ||
+      book.category ||
+      undefined,
+
     bookFormat: "https://schema.org/EBook",
     inLanguage: "en",
+
+    genre: book.genre || undefined,
 
     brand: {
       "@type": "Brand",
@@ -50,7 +59,7 @@ const ProductSchema = ({ book }) => {
 
       url: productUrl,
 
-      priceCurrency: "USD",
+      priceCurrency: book.currency || "USD",
 
       price: String(book.price),
 

@@ -1170,7 +1170,7 @@
 
   padding: 10px 15px;
 
-  background: #c9a45c;
+  background: #faf7f1;
 
   border: 1px solid #c9a45c;
   border-radius: 2px;
@@ -3659,7 +3659,7 @@
 
 /* ===================================
 why section
-*/ ===================================
+ =================================== */
 
 .why .section-heading {
   position: relative;
@@ -6318,7 +6318,7 @@ why section
 .checkout-page {
   min-height: 100vh;
   background: #090909;
-  color: #f5f1e8;
+  color: #faf7f1;
   font-family: "DM Sans", sans-serif;
 }
 

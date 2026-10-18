@@ -1,3 +1,8 @@
+import {
+  SITE_URL,
+  getBookUrl,
+} from "../utils/seo";
+
 const BreadcrumbSchema = ({ book }) => {
   const schema = {
     "@context": "https://schema.org",
@@ -7,19 +12,19 @@ const BreadcrumbSchema = ({ book }) => {
         "@type": "ListItem",
         position: 1,
         name: "Home",
-        item: "https://tresco.firm.in/",
+        item: `${SITE_URL}/`,
       },
       {
         "@type": "ListItem",
         position: 2,
         name: "Books",
-        item: "https://tresco.firm.in/books",
+        item: `${SITE_URL}/books`,
       },
       {
         "@type": "ListItem",
         position: 3,
         name: book.title,
-        item: `https://tresco.firm.in/books/${book.id}`,
+        item: getBookUrl(book.id),
       },
     ],
   };

@@ -1,26 +1,32 @@
 import { useEffect } from "react";
 
-import { getBookUrl } from "../utils/seo";
+import {
+  SITE_URL,
+  getBookUrl,
+} from "../utils/seo";
 
 const BookSEO = ({ book }) => {
   useEffect(() => {
-    const url = getBookUrl(book.id);
-    
+    if (!book) return;
 
-    const image = book.images?.cover
+    const url = getBookUrl(book.id);
+
+    const imageUrl = book.images?.cover
       ? book.images.cover.startsWith("http")
         ? book.images.cover
-        : `https://tresco.firm.in${book.images.cover}`
-        : "";
+        : `${SITE_URL}${book.images.cover}`
+      : `${SITE_URL}/images/og-image.png`;
 
     const title =
-      book.seo?.title || `${book.title} | Business Playbook`;
+      book.seo?.title ||
+      `${book.title} | Business Playbook`;
 
     const description =
-      book.seo?.description || book.description;
+      book.seo?.description ||
+      book.description ||
+      `Learn more about ${book.title} from Business Playbook.`;
 
     document.title = title;
-
 
     const setMeta = (attribute, key, value) => {
       let element = document.head.querySelector(
@@ -44,6 +50,9 @@ const BookSEO = ({ book }) => {
       );
     };
 
+    /* ================================
+       BASIC SEO
+    ================================= */
 
     setMeta(
       "name",
@@ -51,6 +60,9 @@ const BookSEO = ({ book }) => {
       description
     );
 
+    /* ================================
+       OPEN GRAPH
+    ================================= */
 
     setMeta(
       "property",
@@ -58,13 +70,11 @@ const BookSEO = ({ book }) => {
       title
     );
 
-
     setMeta(
       "property",
       "og:description",
       description
     );
-
 
     setMeta(
       "property",
@@ -72,13 +82,11 @@ const BookSEO = ({ book }) => {
       url
     );
 
-
     setMeta(
       "property",
       "og:image",
-      image
+      imageUrl
     );
-
 
     setMeta(
       "property",
@@ -86,11 +94,26 @@ const BookSEO = ({ book }) => {
       "product"
     );
 
+    setMeta(
+      "property",
+      "og:site_name",
+      "Business Playbook"
+    );
+
+    /* ================================
+       TWITTER
+    ================================= */
 
     setMeta(
-        "name",
-        "twitter:title",
-        title
+      "name",
+      "twitter:card",
+      "summary_large_image"
+    );
+
+    setMeta(
+      "name",
+      "twitter:title",
+      title
     );
 
     setMeta(
@@ -102,14 +125,17 @@ const BookSEO = ({ book }) => {
     setMeta(
       "name",
       "twitter:image",
-      image
+      imageUrl
     );
+
+    /* ================================
+       CANONICAL URL
+    ================================= */
 
     let canonical =
       document.head.querySelector(
         'link[rel="canonical"]'
       );
-
 
     if (!canonical) {
       canonical =
@@ -125,18 +151,19 @@ const BookSEO = ({ book }) => {
       );
     }
 
-
     canonical.setAttribute(
       "href",
       url
     );
 
+    /* ================================
+       CLEANUP
+    ================================= */
 
     return () => {
       document.title =
         "Business Playbook | Practical Books for Confidence, Focus & Personal Growth";
     };
-
   }, [book]);
 
   return null;

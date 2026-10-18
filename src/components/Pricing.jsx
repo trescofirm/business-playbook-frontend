@@ -324,6 +324,93 @@ function Pricing() {
 
       </div>
 
+
+      {/* PROMOTIONAL BANNERS — BELOW HOMEPAGE PRICING CARDS */}
+      <div className="pricing-promotions">
+        {/* OFFER 1: INDIVIDUAL BOOKS */}
+        <article className="pricing-promo">
+          <div className="pricing-promo__copy">
+            <p className="pricing-promo__eyebrow">INDIVIDUAL BOOK OFFER</p>
+            <h3>
+              Flat <strong>20% OFF</strong>
+              <span>on each book!</span>
+            </h3>
+            <a className="pricing-promo__link" href="/books">
+              View details <span aria-hidden="true">→</span>
+            </a>
+          </div>
+
+          <div className="pricing-promo__books" aria-hidden="true">
+            {books.slice(0, 3).map((book, index) => (
+              <img
+                key={book.id}
+                src={book.images?.cover}
+                alt=""
+                className={`pricing-promo__book pricing-promo__book--${index + 1}`}
+                loading="lazy"
+              />
+            ))}
+          </div>
+        </article>
+          
+        {/* OFFER 2: COMPLETE BOOK COMBO */}
+        <article className="pricing-promo">
+          <div className="pricing-promo__copy">
+            <p className="pricing-promo__eyebrow">COMPLETE BOOK COMBO</p>
+            <h3>
+              All 3 books for
+              <span className="pricing-promo__price">$45!</span>
+            </h3>
+            <a className="pricing-promo__link" href="/books">
+              View details <span aria-hidden="true">→</span>
+            </a>
+          </div>
+          
+          <div className="pricing-promo__books" aria-hidden="true">
+            {books.slice(0, 3).map((book, index) => (
+              <img
+                key={book.id}
+                src={book.images?.cover}
+                alt=""
+                className={`pricing-promo__book pricing-promo__book--${index + 1}`}
+                loading="lazy"
+              />
+            ))}
+          </div>
+        </article>
+          
+        {/* OFFER 3: COLLECTION SAVINGS */}
+        <article className="pricing-promo">
+          <div className="pricing-promo__copy">
+            <p className="pricing-promo__eyebrow">SPECIAL COLLECTION OFFER</p>
+            <h3>
+              Save with the
+              <span className="pricing-promo__highlight">
+                complete collection!
+              </span>
+            </h3>
+            <a className="pricing-promo__link" href="/books">
+              View details <span aria-hidden="true">→</span>
+            </a>
+          </div>
+          
+          <div className="pricing-promo__books" aria-hidden="true">
+            {books.slice(0, 3).map((book, index) => (
+              <img
+                key={book.id}
+                src={book.images?.cover}
+                alt=""
+                className={`pricing-promo__book pricing-promo__book--${index + 1}`}
+                loading="lazy"
+              />
+            ))}
+
+            <span className="pricing-promo__badge">$45</span>
+          </div>
+        </article>
+      </div>
+
+
     </section>
   );
 }

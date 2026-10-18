@@ -5,6 +5,11 @@ import {
   useState,
 } from "react";
 
+import {
+  books,
+  collection,
+} from "../data/content";
+
 /* =========================================================
    CART CONTEXT
 ========================================================= */
@@ -22,15 +27,13 @@ const CART_STORAGE_KEY =
    VALID BOOKS
 ========================================================= */
 
-const VALID_BOOK_IDS = [
-  "how-to-attract-women",
-  "dopamine-detox",
-  "unlock-focus",
-];
+const VALID_BOOK_IDS = books.map(
+  (book) => book.id
+);
 
 /* =========================================================
    USD-ONLY PRICES
-========================================================= */
+========================================================= *
 
 const BOOK_PRICES = {
   "how-to-attract-women": 19.99,
@@ -42,7 +45,7 @@ const BOOK_PRICES = {
 
 /* =========================================================
    OLD / REFERENCE PRICES
-========================================================= */
+========================================================= *
 
 const BOOK_OLD_PRICES = {
   "how-to-attract-women": 25.0,
@@ -52,9 +55,9 @@ const BOOK_OLD_PRICES = {
 
 /* =========================================================
    COMPLETE COLLECTION
-========================================================= */
+========================================================= *
 
-const COLLECTION_PRICE = 45.0;
+const COLLECTION_PRICE = 45.0; */
 
 /* =========================================================
    CURRENCY
@@ -76,7 +79,7 @@ const COUPONS = {
 
 /* =========================================================
    GET BOOK PRICE
-========================================================= */
+========================================================= *
 
 const getBookPrice = (id) => {
   return Number(BOOK_PRICES[id]) || 0;
@@ -84,7 +87,7 @@ const getBookPrice = (id) => {
 
 /* =========================================================
    GET OLD BOOK PRICE
-========================================================= */
+========================================================= *
 
 const getBookOldPrice = (id) => {
   const value = BOOK_OLD_PRICES[id];
@@ -96,7 +99,7 @@ const getBookOldPrice = (id) => {
 
 /* =========================================================
    GET COLLECTION PRICE
-========================================================= */
+========================================================= *
 
 const getCollectionPrice = () => {
   return Number(COLLECTION_PRICE) || 0;
@@ -106,11 +109,43 @@ const getCollectionPrice = () => {
    GET CURRENCY FROM COUNTRY
 ========================================================= */
 
+// updated code: 
+
+const getBook = (id) => {
+  return books.find(
+    (book) => book.id === id
+  );
+};
+
+const getBookPrice = (id) => {
+  const book = getBook(id);
+
+  return Number(book?.price) || 0;
+};
+
+const getBookOldPrice = (id) => {
+  const book = getBook(id);
+
+  return book?.oldPrice == null
+    ? null
+    : Number(book.oldPrice);
+};
+
+const getCollectionPrice = () => {
+  return Number(collection?.price) || 0;
+};
+
 /* =========================================================
    CURRENCY SYMBOL
 ========================================================= */
 
-const getCurrencySymbol = () => "$";
+const getCurrencySymbol = (
+  currency = DEFAULT_CURRENCY
+) => {
+  return currency === "USD"
+    ? "$"
+    : currency;
+};
 
 /* =========================================================
    FORMAT PRICE
@@ -118,18 +153,21 @@ const getCurrencySymbol = () => "$";
 
 const formatPrice = (
   value,
-  currency
+  currency = DEFAULT_CURRENCY
 ) => {
   const amount = Number(
     value || 0
   );
 
-  return new Intl.NumberFormat("en-US", {
-    style: "currency",
-    currency: "USD",
-    minimumFractionDigits: 2,
-    maximumFractionDigits: 2,
-  }).format(amount);
+  return new Intl.NumberFormat(
+    "en-US",
+    {
+      style: "currency",
+      currency,
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 2,
+    }
+  ).format(amount);
 };
 
 /* =========================================================
@@ -178,13 +216,11 @@ const cleanCart = (
       price:
         getBookPrice(
           item.id,
-          currency
         ),
 
       oldPrice:
         getBookOldPrice(
           item.id,
-          currency
         ),
 
       image:
@@ -237,10 +273,8 @@ export function CartProvider({
         const parsed =
           JSON.parse(saved);
 
-        return cleanCart(
-          parsed,
-          DEFAULT_CURRENCY
-        );
+        return cleanCart(parsed);
+        
       } catch (error) {
         console.error(
           "Unable to load cart:",
@@ -262,14 +296,11 @@ export function CartProvider({
      UPDATE CART WHEN CURRENCY CHANGES
   ======================================================= */
 
-  useEffect(() => {
-    setCartItems((items) =>
-      cleanCart(
-        items,
-        currency
-      )
-    );
-  }, [currency]);
+  // useEffect(() => {
+  //   setCartItems((items) =>
+  //     cleanCart(items)
+  //   );
+  // }, [currency]);
 
   /* =======================================================
      SAVE CART
@@ -367,13 +398,11 @@ export function CartProvider({
         price:
           getBookPrice(
             product.id,
-            currency
           ),
 
         oldPrice:
           getBookOldPrice(
             product.id,
-            currency
           ),
 
         image:
@@ -448,13 +477,11 @@ export function CartProvider({
             price:
               getBookPrice(
                 product.id,
-                currency
               ),
 
             oldPrice:
               getBookOldPrice(
                 product.id,
-                currency
               ),
 
             image:
@@ -538,7 +565,6 @@ export function CartProvider({
             sum +
             getBookPrice(
               item.id,
-              currency
             ),
           0
         )
@@ -551,9 +577,7 @@ export function CartProvider({
 
   const collectionTotal =
     bookCount === 3
-      ? getCollectionPrice(
-          currency
-        )
+      ? getCollectionPrice()
       : actualSubtotal;
 
   /* =======================================================
@@ -565,9 +589,7 @@ export function CartProvider({
       ? Number(
           (
             actualSubtotal -
-            getCollectionPrice(
-              currency
-            )
+            getCollectionPrice()
           ).toFixed(2)
         )
       : 0;
@@ -804,9 +826,7 @@ export function CartProvider({
         individualSaving,
 
         collectionPrice:
-          getCollectionPrice(
-            currency
-          ),
+          getCollectionPrice(),
 
         discount,
 

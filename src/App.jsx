@@ -13,15 +13,26 @@ import Footer from "./components/Footer";
 import OrganizationSchema from "./components/OrganizationSchema";
 import WebSiteSchema from "./components/WebSiteSchema";
 
+import Guides from "./pages/Guides";
+import GuidePage from "./pages/GuidePage";
+
 import Checkout from "./pages/Checkout";
 import Terms from "./pages/Terms";
 import Privacy from "./pages/Privacy";
 import Refund from "./pages/Refund";
 import FinalCTA from "./components/FinalCTA";
 
+import { books } from "./data/content";
+
 import BookPage from "./pages/BookPage";
 
 import Books from "./pages/Books";
+
+import NotFound from "./pages/NotFound";
+
+import BookListSchema from "./components/BookListSchema";
+
+import MyBooks from "./pages/MyBooks";
 
 // =========================================================
 // HOME PAGE
@@ -94,9 +105,29 @@ function App() {
         element={<BookPage />}
       />
 
-      <Route 
-        path="/books" 
-        element={<Books />} 
+      <Route
+        path="/my-books"
+        element={<MyBooks />}
+      />
+
+      <Route
+        path="/books"
+        element={
+          <>
+            <BookListSchema books={books} />
+            <Books /> 
+          </>
+        }
+      />
+
+      <Route
+        path="/guides"
+        element={<Guides />}
+      />
+            
+      <Route
+        path="/guides/:slug"
+        element={<GuidePage />}
       />
 
       {/* ===================================================

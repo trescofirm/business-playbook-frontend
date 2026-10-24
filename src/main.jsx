@@ -6,6 +6,8 @@ import App from "./App";
 import { CartProvider } from "./context/CartContext";
 import { PayPalScriptProvider } from "@paypal/react-paypal-js";
 
+import CookieConsent from "./components/CookieConsent";
+
 import "./index.css";
 
 const paypalOptions = {
@@ -22,6 +24,7 @@ ReactDOM.createRoot(
       <CartProvider>
         <PayPalScriptProvider options={paypalOptions}>
           <App />
+          <CookieConsent />
         </PayPalScriptProvider>
       </CartProvider>
     </BrowserRouter>

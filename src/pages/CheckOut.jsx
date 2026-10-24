@@ -10,6 +10,12 @@ import Navbar from "../components/Navbar";
 import "../styles/checkout-page.css";
 
 import {
+  trackBeginCheckout,
+  trackAddPaymentInfo,
+  trackPurchase,
+} from "../utils/analytics";
+
+import {
   ArrowLeft,
   CheckCircle2,
   ChevronDown,
@@ -26,6 +32,8 @@ import {
 
 import { useCart } from "../context/CartContext";
 import { collection } from "../data/content";
+
+ import OptimizedImage from "../components/OptimizedImage";
 
 /* =========================================================
    API CONFIG
@@ -574,6 +582,18 @@ function Checkout() {
             result.downloads || []
           );
 
+          trackPurchase({
+            transactionId: result.payment_id || paypalOrderId,
+            items: cartItems.map((item) => ({
+              item_id: item.id,
+              item_name: item.title,
+              price: item.price,
+              quantity: 1,
+            })),
+            value: pricing.total,
+            currency: result.currency || "USD",
+          });
+
           /* -----------------------------------------
              CLEAR CART
           ----------------------------------------- */
@@ -921,6 +941,17 @@ const loadRazorpay = () =>
         return;
       }
 
+      trackBeginCheckout({
+        items: cartItems.map((item) => ({
+          item_id: item.id,
+          item_name: item.title,
+          price: item.price,
+          quantity: 1,
+        })),
+        value: pricing.total,
+        currency: "USD", // display pricing is always computed in USD per calculateDisplayPricing()
+      });
+
       try {
         setProcessing(true);
       
@@ -1016,6 +1047,17 @@ const loadRazorpay = () =>
           );
         
         }
+
+        trackAddPaymentInfo({
+          items: cartItems.map((item) => ({
+            item_id: item.id,
+            item_name: item.title,
+            price: item.price,
+            quantity: 1,
+          })),
+          value: pricing.total,
+          currency: "USD",
+        });
       
         window.location.href =
           result.approvalUrl;
@@ -1298,6 +1340,19 @@ const loadRazorpay = () =>
                       []
                   );
 
+                  trackPurchase({
+                    transactionId:
+                      verifyResult.payment_id || payment.razorpay_payment_id || verifyResult.orderNumber,
+                    items: cartItems.map((item) => ({
+                      item_id: item.id,
+                      item_name: item.title,
+                      price: item.price,
+                      quantity: 1,
+                    })),
+                    value: pricing.total,
+                    currency: verifyResult.currency || razorpayCurrency,
+                  });
+
                   /* ==========================================
                      CLEAR CART
                   ========================================== */
@@ -1342,6 +1397,17 @@ const loadRazorpay = () =>
             setProcessing(false);
           }
         );
+
+        trackAddPaymentInfo({
+          items: cartItems.map((item) => ({
+            item_id: item.id,
+            item_name: item.title,
+            price: item.price,
+            quantity: 1,
+          })),
+          value: pricing.total,
+          currency: razorpayCurrency,
+        });
 
         razorpay.open();
       } catch (error) {
@@ -2030,13 +2096,15 @@ const loadRazorpay = () =>
                     >
 
                       <div className="checkout-order-image">
-
-                        <img
-                          src={
-                            item.image ||
-                            item.cover
-                          }
+                       
+                        <OptimizedImage
+                          src={item.image || item.cover}
                           alt={`${item.title} book cover`}
+                          width={300}
+                          height={430}
+                          sizes="(max-width: 600px) 30vw, 120px"
+                          loading="lazy"
+                          className="checkout-book-image"
                         />
 
                       </div>
@@ -2332,6 +2400,40 @@ const loadRazorpay = () =>
           </aside>
 
         </div>
+
+        
+        <div className="gumroad-alternative">
+          <span className="gumroad-alternative-icon" aria-hidden="true">
+            <svg
+              viewBox="0 0 24 24"
+              width="20"
+              height="20"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="1.8"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            >
+              <path d="M4 5.5h16v13H4z" />
+              <path d="M8 9h8M8 12h8M8 15h5" />
+            </svg>
+          </span>
+                
+          <span className="gumroad-alternative-copy">
+            <strong>Prefer Gumroad?</strong>
+            <small>Get the 30 Day Dopamine Detox Workbook there.</small>
+          </span>
+                
+          <a
+            href="https://lakshay622.gumroad.com/l/focus-control-for-your-exam-period"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="gumroad-alternative-link"
+          >
+            View on Gumroad <span aria-hidden="true">↗</span>
+          </a>
+        </div>
+
 
         <footer className="checkout-footer">
 

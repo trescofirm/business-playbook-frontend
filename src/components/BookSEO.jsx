@@ -162,7 +162,7 @@ const BookSEO = ({ book }) => {
 
     return () => {
       document.title =
-        "Business Playbook | Practical Books for Confidence, Focus & Personal Growth";
+        "Business Playbook | Books for Confidence, Focus & Growth";
     };
   }, [book]);
 

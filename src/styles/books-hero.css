@@ -71,7 +71,7 @@
 
 
   /* Reduce vertical space so the benefits appear higher */
-  padding: 55px clamp(32px, 6.8vw, 132px) 20px;
+  padding: 70px clamp(32px, 6.8vw, 132px) 20px;
 }
 
 

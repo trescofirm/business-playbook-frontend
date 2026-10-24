@@ -1,6 +1,6 @@
 const pushToDataLayer = (data) => {
   window.dataLayer = window.dataLayer || [];
-
+  window.dataLayer.push({ ecommerce: null });
   window.dataLayer.push(data);
 };
 

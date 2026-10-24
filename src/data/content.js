@@ -44,8 +44,8 @@ export const books = [
     author: "Dr. Kenneth Anderson",
 
     images: {
-      cover: "/images/books/how-to-attract-women-cover.jpeg",
-      mockup: "/images/books/how-to-attract-women-cover.jpeg",
+      cover: "/images/books/how-to-attract-women-cover.jpg",
+      mockup: "/images/books/how-to-attract-women-cover.jpg",
     },
 
     price: 19.99,
@@ -267,8 +267,12 @@ export const books = [
 
     relatedGuides: [
       {
-        slug: "actual-guide-slug",
-        title: "Actual Guide Title",
+        slug: "how-to-build-social-confidence",
+        title: "How to Build Social Confidence",
+      },
+      {
+        slug: "how-to-build-a-social-circle",
+        title: "How to Build a Stronger Social Circle",
       },
     ],
   },
@@ -298,8 +302,8 @@ export const books = [
     author: "",
 
     images: {
-      cover: "/images/books/book2-mockup.jpeg",
-      mockup: "/images/books/book2-mockup.jpeg",
+      cover: "/images/books/book2-mockup.jpg",
+      mockup: "/images/books/book2-mockup.jpg",
     },
 
     features: [
@@ -540,8 +544,12 @@ export const books = [
 
     relatedGuides: [
       {
-        slug: "actual-guide-slug",
-        title: "Actual Guide Title",
+        slug: "how-to-reduce-phone-distractions",
+        title: "How to Reduce Phone Distractions",
+      },
+      {
+        slug: "dopamine-detox-for-students",
+        title: "Dopamine Detox for Students",
       },
     ],
   },
@@ -827,10 +835,15 @@ export const books = [
       }
     ],
     
+    
     relatedGuides: [
       {
-        slug: "actual-guide-slug",
-        title: "Actual Guide Title",
+        slug: "how-to-improve-focus-and-concentration",
+        title: "How to Improve Focus and Concentration",
+      },
+      {
+        slug: "how-to-stop-multitasking",
+        title: "How to Stop Multitasking and Improve Focus",
       },
     ],
   },

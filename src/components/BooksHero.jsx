@@ -3,6 +3,8 @@ import { ArrowRight, BookOpen, ShieldCheck, RotateCcw, TabletSmartphone, Heart, 
 import { Link } from "react-router-dom";
 import "../styles/books-hero.css";
 
+import OptimizedImage from "../components/OptimizedImage";
+
 const formatPrice = (price) =>
   Number(price).toLocaleString("en-US", {
     style: "currency",
@@ -75,14 +77,18 @@ export default function BooksHero({ books = [], onAddToCart }) {
             className="books-hero-product-cover-link"
             aria-label={`View ${activeBook.title}`}
           >
-            <img
-              className="books-hero-product-cover"
-              src={activeBook.images.cover}
-              alt={`${activeBook.title} book cover`}
-              width="240"
-              height="340"
-              fetchPriority="high"
-            />
+            
+          <OptimizedImage
+            className="books-hero-product-cover"
+            src={activeBook.images.cover}
+            alt={`${activeBook.title} book cover`}
+            width={240}
+            height={340}
+            sizes="(max-width: 600px) 45vw, 240px"
+            loading="eager"
+            fetchPriority="high"
+          />
+
           </Link>
           <div className="books-hero-product-info">
             <h2><Link to={`/books/${activeBook.id}`}>{activeBook.title}</Link></h2>

@@ -14,6 +14,8 @@ import {
   Mail,
 } from "lucide-react";
 
+// import OptimizedImage from "./OptimizedImage";
+
 function Footer() {
   const navigate = useNavigate();
 
@@ -82,8 +84,11 @@ function Footer() {
   ========================================= */
 
   const sendEmail = () => {
-    window.location.href =
-      "mailto:lakshaymittal1805@gmail.com";
+    const user = ["lakshaymittal", "1805"].join("");
+    const domain = ["gmail", "com"].join(".");
+    const email = `${user}@${domain}`;
+
+    window.location.href = `mailto:${email}`;
   };
 
   /* =========================================
@@ -129,7 +134,7 @@ function Footer() {
           >
 
             <img
-              src="/tresco-logo.png"
+              src="/public/images/tresco-logo.png"
               alt="TRESCO"
               className="tresco-navbar-logo-image"
             />
@@ -252,16 +257,11 @@ function Footer() {
             className="footer-contact-link"
             onClick={sendEmail}
             type="button"
+            aria-label="Email Business Playbook support"
           >
-
             <Mail size={14} />
-
-            <span>
-              lakshaymittal1805@gmail.com
-            </span>
-
+            <span>Email Support</span>
           </button>
-
 
           {/* INSTAGRAM */}
 

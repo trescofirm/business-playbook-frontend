@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import {
   ChevronDown,
@@ -8,6 +7,8 @@ import {
 } from "lucide-react";
 
 import { faqs } from "../data/content";
+
+import OptimizedImage from "./OptimizedImage";
 
 function FAQ() {
   const [active, setActive] = useState(null);
@@ -36,11 +37,15 @@ function FAQ() {
       <div className="faq-redesign__main">
         {/* Left image */}
         <div className="faq-help-card">
-          <img
-            src="/images/Still Life Help Panel with Books and Plant.png"
-            alt="Tresco books in warm natural light"
-            className="faq-help-card__image"
-          />
+        <OptimizedImage
+          src="/images/Still Life Help Panel with Books and Plant.png"
+          alt="Tresco books in warm natural light"
+          className="faq-help-card__image"
+          width={1200}
+          height={800}
+          sizes="(max-width: 600px) 100vw, 400px"
+          loading="lazy"
+        />
         </div>
 
         {/* Right FAQ accordion */}
@@ -102,26 +107,18 @@ function FAQ() {
               <br />
               Our team is here to help you.
             </p>
+          <button
+                type="button"
+                className="faq-email-button"
+                onClick={() => {
+                  const recipient = ["support", "tresco.com"].join("@");
+                  window.location.href = `mailto:${recipient}`;
+                }}
+              >
+                Contact Support by Email
+              </button>
+            </div>
           </div>
-        </div>
-
-        <a
-          className="faq-support-item"
-          href="mailto:support@tresco.com"
-        >
-          <span className="faq-support-item__icon">
-            <Mail size={27} strokeWidth={1.7} />
-          </span>
-
-          <div>
-            <h4>Email Us</h4>
-            <p>
-              support@tresco.com
-              <br />
-              We usually respond within 24 hours.
-            </p>
-          </div>
-        </a>
 
         <div className="faq-support-item">
           <span className="faq-support-item__icon">

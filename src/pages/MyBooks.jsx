@@ -354,11 +354,17 @@ function MyBooks() {
               >
                 <div className="my-book-image-wrapper">
                   {image ? (
-                    <img
-                      src={image}
-                      alt={`${title} book cover`}
-                      className="my-book-image"
-                    />
+                    
+                  <OptimizedImage
+                    src={image}
+                    alt={`${title} book cover`}
+                    className="my-book-image"
+                    width={300}
+                    height={430}
+                    sizes="(max-width: 600px) 40vw, 180px"
+                    loading="lazy"
+                  />
+
                   ) : (
                     <div
                       className="my-book-image-placeholder"

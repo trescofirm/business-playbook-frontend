@@ -1,0 +1,199 @@
+/* =========================================================
+   404 PAGE
+
+   Every class starts with "nf-" so nothing here can clash
+   with the rest of index.css.
+========================================================= */
+
+.nf-page {
+  position: relative;
+
+  width: 100%;
+  height: 100vh;
+  height: 100dvh;
+  min-height: 460px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  overflow: hidden;
+
+  background: #000;
+
+  transition: background-color 0.6s ease;
+}
+
+/*
+  When the white circles have finished sweeping in, the whole
+  page turns white. Without this, a thin black strip is always
+  left on the left edge and the text can land on a black gap
+  on small phones.
+*/
+.nf-page.is-finished {
+  background: #fff;
+}
+
+
+/* ---------- WHITE CIRCLES (canvas) ---------- */
+
+.nf-canvas {
+  display: block;
+
+  width: 100%;
+  height: 100%;
+}
+
+
+/* ---------- RUNNING STICK FIGURES ---------- */
+
+.nf-characters {
+  position: absolute;
+
+  width: 99%;
+  height: 95%;
+
+  pointer-events: none;
+}
+
+.nf-character {
+  position: absolute;
+
+  width: 18%;
+  height: 18%;
+  max-width: none;
+
+  user-select: none;
+}
+
+
+/* ---------- MESSAGE ---------- */
+
+.nf-message {
+  position: absolute;
+  z-index: 100;
+
+  width: 90%;
+  height: 90%;
+
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+
+  pointer-events: none;
+}
+
+.nf-message-inner {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+
+  text-align: center;
+
+  opacity: 0;
+  pointer-events: auto;
+
+  transition: opacity 0.5s ease;
+}
+
+.nf-message-inner.is-visible {
+  opacity: 1;
+}
+
+.nf-title {
+  margin: 1% 0;
+
+  font-size: clamp(22px, 4vw, 35px);
+  font-weight: 600;
+  line-height: 1.2;
+
+  color: #000;
+}
+
+.nf-code {
+  margin: 1% 0;
+
+  font-size: clamp(56px, 12vw, 80px);
+  font-weight: 700;
+  line-height: 1.1;
+
+  color: #000;
+}
+
+.nf-text {
+  width: min(90%, 520px);
+  margin: 1% 0;
+
+  font-size: 15px;
+  line-height: 1.5;
+  text-align: center;
+
+  color: #000;
+}
+
+
+/* ---------- BUTTONS ---------- */
+
+.nf-actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 16px;
+
+  margin-top: 32px;
+}
+
+.nf-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+
+  padding: 8px 24px;
+
+  font-family: inherit;
+  font-size: 16px;
+  font-weight: 500;
+  line-height: 1.5;
+
+  color: #000;
+  background: transparent;
+
+  border: 2px solid #000;
+
+  text-decoration: none;
+  cursor: pointer;
+
+  transition: all 0.3s ease-in-out;
+}
+
+.nf-btn:hover {
+  color: #fff;
+  background: #000;
+
+  transform: scale(1.05);
+}
+
+.nf-btn--solid {
+  color: #fff;
+  background: #000;
+}
+
+.nf-btn--solid:hover {
+  background: #1a1a1a;
+}
+
+
+/* ---------- REDUCED MOTION ---------- */
+
+@media (prefers-reduced-motion: reduce) {
+  .nf-page,
+  .nf-message-inner,
+  .nf-btn {
+    transition: none;
+  }
+
+  .nf-btn:hover {
+    transform: none;
+  }
+}

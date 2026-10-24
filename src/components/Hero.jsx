@@ -14,6 +14,8 @@ import {
 import { useCart } from "../context/CartContext";
 import { books, collection } from "../data/content";
 
+import OptimizedImage from "../components/OptimizedImage";
+
 function Hero() {
   const { addToCart } = useCart();
 
@@ -175,15 +177,15 @@ function Hero() {
                 <div className="hero-book-panel-shape" />
 
                 {book?.images?.cover ? (
-                  <img
+                  <OptimizedImage
                     className="hero-book-image"
                     src={book.images.cover}
                     alt={book.title ? `${book.title} book cover` : fallback}
-                    width="300"
-                    height="430"
+                    width={300}
+                    height={430}
+                    sizes="(max-width: 600px) 30vw, 200px"
                     loading={index === 0 ? "eager" : "lazy"}
                     fetchPriority={index === 0 ? "high" : "auto"}
-                    draggable="false"
                   />
                 ) : (
                   <div className="hero-book-placeholder" aria-hidden="true">

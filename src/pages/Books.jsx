@@ -146,6 +146,8 @@ import "../styles/books-page.css";
 
 import BooksHero from "../components/BooksHero";
 
+import OptimizedImage from "../components/OptimizedImage";
+
 const formatPrice = (price) =>
   Number(price).toLocaleString("en-US", {
     style: "currency",
@@ -237,12 +239,13 @@ const Books = () => {
               className="books-page-card-image-link"
               aria-label={`View ${book.title}`}
             >
-              <div className="books-page-card-image">
-                <img
+              <div className="books-page-card-image">                
+                <OptimizedImage
                   src={book.images?.cover}
                   alt={`${book.title} book cover`}
-                  width="270"
-                  height="395"
+                  width={270}
+                  height={395}
+                  sizes="(max-width: 600px) 110px, (max-width: 900px) 140px, 187px"
                   loading="lazy"
                 />
               </div>
@@ -342,9 +345,20 @@ const Books = () => {
           </div>
           <div className="books-collection-covers" aria-hidden="true">
             {books.slice(0, 3).map((book) => (
-              <img key={book.id} src={book.images?.cover} alt="" loading="lazy" />
+              <div className="books-collection-cover-frame" key={book.id}>
+                <img
+                  src={book.images?.cover}
+                  alt=""
+                  width="270"
+                  height="395"
+                  loading="lazy"
+                  decoding="async"
+                />
+              </div>
             ))}
-            <span className="books-collection-save">SAVE<br />13%</span>
+            <span className="books-collection-save">
+              SAVE<br />13%
+            </span>
           </div>
           <div className="books-collection-action">
             <button type="button" onClick={handleAddCollection}>
@@ -364,13 +378,15 @@ const Books = () => {
                 to={`/books/${featuredBook.id}`}
                 className="books-featured-cover-link"
                 aria-label={`View ${featuredBook.title}`}
-              >
-                <img
+              >                
+                <OptimizedImage
                   className="books-featured-cover"
                   src={featuredBook.images?.cover}
                   alt={`${featuredBook.title} book cover`}
-                  width="270"
-                  height="395"
+                  width={270}
+                  height={395}
+                  sizes="(max-width: 600px) 80vw, 270px"
+                  loading="eager"
                   fetchPriority="high"
                 />
               </Link>

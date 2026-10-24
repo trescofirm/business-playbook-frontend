@@ -21,11 +21,15 @@ import { books } from "../data/content";
 import { useCart } from "../context/CartContext";
 import { trackViewItem, trackAddToCart } from "../utils/analytics";
 import BookSEO from "../components/BookSEO";
+import ProductSchema from "../components/ProductSchema";
+import BreadcrumbSchema from "../components/BreadcrumbSchema";
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
 import Breadcrumbs from "../components/Breadcrumbs";
 import NotFound from "./NotFound";
 import "../styles/books-page.css";
+
+import OptimizedImage from "../components/OptimizedImage";
 
 const BookPage = () => {
   const { slug } = useParams();
@@ -72,6 +76,8 @@ const BookPage = () => {
   return (
     <div className="book-detail-page">
       <BookSEO book={book} />
+      <ProductSchema book={book} />
+      <BreadcrumbSchema book={book} />
       <Navbar />
 
       <main className="book-detail-main">
@@ -83,13 +89,15 @@ const BookPage = () => {
         <section className="bd-product-hero" aria-labelledby="book-title">
           <div className="bd-cover-column">
             <div className="bd-cover-stage">
-              {cover ? (
-                <img
+              {cover ? (                
+                <OptimizedImage
                   className="bd-book-cover"
                   src={cover}
                   alt={`${book.title} digital book cover`}
-                  width="420"
-                  height="610"
+                  width={420}
+                  height={610}
+                  sizes="(max-width: 600px) 80vw, 420px"
+                  loading="eager"
                   fetchPriority="high"
                 />
               ) : (

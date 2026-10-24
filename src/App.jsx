@@ -16,7 +16,7 @@ import WebSiteSchema from "./components/WebSiteSchema";
 import Guides from "./pages/Guides";
 import GuidePage from "./pages/GuidePage";
 
-import Checkout from "./pages/Checkout";
+import Checkout from "./pages/CheckOut";
 import Terms from "./pages/Terms";
 import Privacy from "./pages/Privacy";
 import Refund from "./pages/Refund";

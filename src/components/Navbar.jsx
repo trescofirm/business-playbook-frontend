@@ -331,7 +331,7 @@ useEffect(() => {
           >
             <a href="/" className="navbar-logo tresco-navbar-logo" aria-label="TRESCO Home">
               <img
-                src="/tresco-logo.png"
+                src="/public/images/tresco-logo.png"
                 alt="TRESCO"
                 className="tresco-navbar-logo-image"
               />

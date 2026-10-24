@@ -1,11 +1,17 @@
 import {
   Link,
+  Navigate,
   useParams,
+  useLocation
 } from "react-router-dom";
+
+import { useEffect } from "react";
 
 import { guides } from "../data/guides";
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
+
+import "../styles/books-page.css";
 
 const GUIDE_CONTENT = {
   "how-to-build-social-confidence": {
@@ -253,18 +259,28 @@ const GUIDE_CONTENT = {
 const GuidePage = () => {
   const { slug } = useParams();
 
+  const location = useLocation();
+
+  useEffect(() => {
+    window.scrollTo({
+      top: 0,
+      left: 0,
+      behavior: "instant",
+    });
+  }, [location.pathname]);
+
   const guide = guides.find(
     (item) => item.slug === slug
   );
 
   if (!guide) {
-    return null;
+    return <Navigate to="/guides" replace />;
   }
 
   const content = GUIDE_CONTENT[slug];
 
   if (!content) {
-    return null;
+    return <Navigate to="/guides" replace />;
   }
 
   return (

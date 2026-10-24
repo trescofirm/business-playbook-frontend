@@ -323,20 +323,23 @@ function Refund() {
               team using the official email address
               provided on the website.
             </p>
-
-            {/* 
-              IMPORTANT:
-              Replace this email with the client's
-              actual support email before publishing.
-            */}
-
-            <a
-              href="mailto:lakshaymittal1805@gmail.com"
-              className="legal-email"
+            
+            <button
+              type="button"
+              className="legal-email-button"
+              onClick={() => {
+                const recipient = [
+                  ["lakshaymittal", "1805"].join(""),
+                  "gmail.com",
+                ].join("@");
+              
+                window.location.href = `mailto:${recipient}`;
+              }}
+              aria-label="Email support about refunds"
             >
               <Mail size={16} />
-              lakshaymittal1805@gmail.com
-            </a>
+              Contact Support by Email
+            </button>
           </section>
 
         </div>

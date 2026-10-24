@@ -118,12 +118,19 @@ ol {
   padding: 0;
 }
 
-.site {
-  width: 100%;
-  min-height: 100vh;
 
-  overflow: hidden;
+.site {
+  display: block;
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
+  min-height: 100vh;
+  min-height: 100dvh;
+  margin: 0;
+  overflow-x: clip;
+  box-sizing: border-box;
 }
+
 
 
 /* =========================================================
@@ -188,7 +195,7 @@ ol {
 /* =========================================================
    EYEBROW
 ========================================================= */
-
+/* 
 .eyebrow {
   display: block;
 
@@ -203,7 +210,7 @@ ol {
   line-height: 1.4;
 
   text-transform: uppercase;
-}
+} */
 
 
 /* =========================================================
@@ -506,7 +513,7 @@ ol {
    NAVBAR — PREMIUM COMPACT
 ========================================================= */
 
-.navbar {
+/* .navbar {
   position: fixed;
 
   top: 0;
@@ -525,14 +532,14 @@ ol {
   box-shadow: none !important;
 
   color: var(--black);
-}
+} */
 
 
 /* =========================================================
    NAVBAR CONTAINER
 ========================================================= */
 
-.navbar-container {
+/* .navbar-container {
   width: 100%;
   height: 68px;
 
@@ -542,9 +549,9 @@ ol {
   align-items: center;
 
   box-sizing: border-box;
-}
+} */
 
-/* Align the navbar's inner content to the hero's wider layout */
+/* Align the navbar's inner content to the hero's wider layout *
 .navbar > div {
   width: 100% !important;
   max-width: 1660px !important;
@@ -552,6 +559,29 @@ ol {
   padding-left: 72px !important;
   padding-right: 30px !important;
   box-sizing: border-box !important;
+}*/
+
+
+/* Navbar inner container — responsive horizontal spacing */
+.navbar > .navbar-container {
+  width: 100% !important;
+  max-width: 1660px !important;
+  margin-left: auto !important;
+  margin-right: auto !important;
+  padding-left: 30px !important;
+  padding-right: 30px !important;
+  box-sizing: border-box !important;
+}
+
+@media (max-width: 760px) {
+  .navbar > .navbar-container {
+    width: 100% !important;
+    max-width: 100% !important;
+    padding-left: 12px !important;
+    padding-right: 12px !important;
+    margin-left: 0 !important;
+    margin-right: 0 !important;
+  }
 }
 
 
@@ -682,19 +712,6 @@ ol {
 }
 
 
-/* =========================================================
-   NAV ACTIONS
-========================================================= */
-
-.nav-actions {
-  display: flex;
-  align-items: center;
-
-  gap: 9px;
-
-  flex-shrink: 0;
-}
-
 
 /* =========================================================
    CURRENCY
@@ -724,70 +741,6 @@ ol {
 
   cursor: pointer;
 }
-
-
-/* =========================================================
-   CART BUTTON
-========================================================= */
-
-.cart-button {
-  position: relative;
-
-  width: 38px;
-  height: 38px;
-
-  display: grid;
-  place-items: center;
-
-  padding: 0;
-
-  background: transparent;
-
-  color: white;
-
-  cursor: pointer;
-
-  transition:
-    background 0.2s ease,
-    transform 0.2s ease;
-}
-
-.cart-button:hover {
-  background: rgba(21, 21, 21, 0.08);
-
-  transform: translateY(-1px);
-}
-
-
-/* =========================================================
-   CART BADGE
-========================================================= */
-
-.cart-count {
-  position: absolute;
-
-  top: 1px;
-  right: 1px;
-
-  min-width: 14px;
-  height: 14px;
-
-  padding: 0 3px;
-
-  display: grid;
-  place-items: center;
-
-  border-radius: 50%;
-
-  background: var(--black);
-  color: var(--white);
-
-  font-size: 7px;
-  font-weight: 700;
-
-  line-height: 1;
-}
-
 
 /* =========================================================
    NAV BUY BUTTON
@@ -15813,7 +15766,6 @@ body,
    BUSINESS PLAYBOOK — LIGHT THEME OVERRIDES
    Appended after all existing CSS.
 ========================================================= */
-
 html {
   color-scheme: light;
 }
@@ -16278,7 +16230,6 @@ body * {
 }
 
 
-
 /* Tablet */
 @media (max-width: 1000px) {
   .hero {
@@ -16333,10 +16284,194 @@ body * {
   .hero-book-panel {
     min-height: 0;
   }
+} 
+
+
+/* =========================================================
+   BUSINESS PLAYBOOK — RESPONSIVE LIGHT THEME
+   Replacement for the light-theme overrides beginning
+   around line 15819 in src/index.css
+========================================================= *
+
+html {
+  color-scheme: light;
 }
 
+html,
+body,
+#root {
+  margin: 0;
+  min-height: 100%;
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
+  background: #faf7f1;
+  color: #111111;
+  box-sizing: border-box;
+}
 
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
 
+body {
+  overflow-x: clip;
+}
+
+/* Keep homepage sections on the intended warm background *
+.site,
+.site > main,
+.hero,
+.why,
+.reviews,
+.pricing,
+.faq,
+.final-cta,
+.footer {
+  min-width: 0;
+  max-width: 100%;
+  background-color: #faf7f1;
+  color: #111111;
+}
+
+/* Do not let decorative surfaces create a separate white panel *
+.hero::before,
+.hero::after,
+.why::before,
+.why::after,
+.reviews::before,
+.reviews::after,
+.pricing::before,
+.pricing::after,
+.faq::before,
+.faq::after,
+.final-cta::before,
+.final-cta::after {
+  pointer-events: none;
+}
+
+/* =========================================================
+   MOBILE HOMEPAGE LAYOUT
+========================================================= *
+
+@media screen and (max-width: 760px) {
+  .site,
+  .site > main,
+  .site .hero {
+    width: 100%;
+    max-width: 100%;
+    min-width: 0;
+    margin-left: 0;
+    margin-right: 0;
+  }
+
+  .site .hero {
+    padding-left: 16px;
+    padding-right: 16px;
+    overflow-x: clip;
+  }
+
+  .site .hero-container {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    max-width: 100%;
+    min-width: 0;
+    min-height: auto;
+    margin: 0;
+    padding: 0;
+    gap: 28px;
+  }
+
+  .site .hero-main {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    max-width: 100%;
+    min-width: 0;
+    margin: 0;
+    padding: 0;
+    gap: 24px;
+  }
+
+  .site .hero-copy {
+    width: 100%;
+    max-width: 100%;
+    min-width: 0;
+    margin: 0;
+    padding: 0;
+    transform: none;
+  }
+
+  .site .hero-title,
+  .site .hero-description,
+  .site .hero-buttons {
+    width: 100%;
+    max-width: 100%;
+    min-width: 0;
+  }
+
+  .site .hero-title {
+    overflow-wrap: break-word;
+  }
+
+  .site .hero-buttons {
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .site .hero-buy,
+  .site .hero-explore {
+    width: 100%;
+    max-width: 100%;
+    min-width: 0;
+    white-space: normal;
+  }
+
+  .site .hero-books {
+    display: flex;
+    justify-content: center;
+    align-items: flex-end;
+    gap: 8px;
+    width: 100%;
+    max-width: 100%;
+    min-width: 0;
+    min-height: 0;
+    margin: 0;
+    padding: 0;
+    transform: none;
+    overflow: hidden;
+  }
+
+  .site .hero-book-1,
+  .site .hero-book-2,
+  .site .hero-book-3 {
+    position: relative;
+    inset: auto;
+    flex: 1 1 0;
+    width: 0;
+    max-width: 145px;
+    min-width: 0;
+    height: auto;
+    margin: 0;
+    transform: none;
+  }
+
+  .site .hero-book-1 img,
+  .site .hero-book-2 img,
+  .site .hero-book-3 img {
+    display: block;
+    width: 100%;
+    max-width: 100%;
+    height: auto;
+    object-fit: contain;
+  }
+}
+
+*/
 /* =========================================================
    BUSINESS PLAYBOOK — NEW HOMEPAGE HERO
    Light editorial layout inspired by the approved reference.
@@ -17306,10 +17441,12 @@ body {
 
 /* Preserve the complete eyebrow and heading */
 .hero .hero-copy {
-  margin-left: 35px !important;
-  margin-top: 0 !important;
-  padding-top: 0 !important;
-  overflow: visible !important;
+  width: 100% !important;
+  max-width: 650px !important;
+  min-width: 0 !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  box-sizing: border-box !important;
 }
 
 .hero .hero-eyebrow {
@@ -21822,5 +21959,525 @@ header.navbar {
 
   .review-card__star-fill svg {
     min-width: 15px;
+  }
+}
+
+
+.cookie-consent {
+  position: fixed;
+  left: 16px;
+  right: 16px;
+  bottom: 16px;
+  z-index: 9999;
+  max-width: 720px;
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 16px 20px;
+  background: #14110d;
+  color: #f5efe4;
+  border: 1px solid rgba(198, 161, 91, 0.35);
+  border-radius: 14px;
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.35);
+  font-family: "Nunito", sans-serif;
+}
+
+.cookie-consent-text {
+  margin: 0;
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+.cookie-consent-text a {
+  color: #faf7f1;
+  text-decoration: underline;
+}
+
+.cookie-consent-actions {
+  display: flex;
+  gap: 10px;
+  flex-shrink: 0;
+}
+
+.cookie-btn {
+  padding: 10px 18px;
+  border-radius: 10px;
+  font-family: inherit;
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+  border: 1px solid #c6a15b;
+}
+
+.cookie-btn-reject {
+  background: transparent;
+  color: #f5efe4;
+}
+
+.cookie-btn-accept {
+  background: #faf7f1;
+  color: #14110d;
+}
+
+@media (max-width: 600px) {
+  .cookie-consent {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  .cookie-consent-actions {
+    justify-content: flex-end;
+  }
+}
+
+
+
+
+/* FIX: MOBILE VIEWPORT WIDTH — NAVBAR AND FULLSCREEN MENU */
+
+@media (max-width: 800px) {
+  .navbar,
+  .navbar .navbar-container {
+    box-sizing: border-box !important;
+    width: 100% !important;
+    max-width: 100vw !important;
+    min-width: 0 !important;
+    left: 0 !important;
+    right: auto !important;
+  }
+
+  .navbar .navbar-container {
+    padding-left: 16px !important;
+    padding-right: 16px !important;
+  }
+
+  .fullscreen-menu {
+    box-sizing: border-box !important;
+    width: 100% !important;
+    max-width: 100vw !important;
+    min-width: 0 !important;
+    left: 0 !important;
+    right: auto !important;
+  }
+
+  .fullscreen-menu-inner {
+    box-sizing: border-box !important;
+    width: calc(100% - 32px) !important;
+    max-width: 100% !important;
+    min-width: 0 !important;
+    margin-left: auto !important;
+    margin-right: auto !important;
+  }
+}
+
+
+
+
+/* =========================================================
+   HOMEPAGE MOBILE LAYOUT
+========================================================= */
+
+@media (max-width: 800px) {
+  .site,
+  .site > main,
+  main .hero {
+    width: 100%;
+    max-width: 100%;
+    min-width: 0;
+    box-sizing: border-box;
+  }
+
+  main .hero {
+    padding: 100px 16px 50px;
+    overflow: clip;
+  }
+
+  main .hero-container {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    max-width: 100%;
+    min-width: 0;
+    min-height: auto;
+    margin: 0;
+    gap: 36px;
+  }
+
+  main .hero-copy {
+    width: 100%;
+    max-width: 100%;
+    min-width: 0;
+    margin: 0;
+    text-align: left;
+  }
+
+  main .hero-title,
+  main .hero-description {
+    width: 100%;
+    max-width: 100%;
+    min-width: 0;
+    overflow-wrap: break-word;
+  }
+
+  main .hero-books {
+    width: 100%;
+    max-width: 100%;
+    min-width: 0;
+    margin: 0 auto;
+  }
+}
+
+
+
+/* =========================================================
+   DEFINITIVE HERO OVERFLOW CORRECTION
+========================================================= */
+
+@media (max-width: 760px) {
+  .site .hero {
+    width: 100% !important;
+    max-width: 100% !important;
+    min-width: 0 !important;
+    margin: 0 !important;
+    overflow-x: clip !important;
+    overflow-y: visible !important;
+    box-sizing: border-box !important;
+  }
+
+  .site .hero .hero-container {
+    display: flex !important;
+    flex-direction: column !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    min-width: 0 !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    gap: 28px !important;
+    box-sizing: border-box !important;
+  }
+
+  .site .hero .hero-main {
+    display: flex !important;
+    flex-direction: column !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    min-width: 0 !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    gap: 24px !important;
+    box-sizing: border-box !important;
+  }
+
+  .site .hero .hero-copy {
+    width: 100% !important;
+    max-width: 100% !important;
+    min-width: 0 !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    transform: none !important;
+    box-sizing: border-box !important;
+  }
+
+  .site .hero .hero-title,
+  .site .hero .hero-description,
+  .site .hero .hero-buttons,
+  .site .hero .hero-benefits {
+    width: 100% !important;
+    max-width: 100% !important;
+    min-width: 0 !important;
+    box-sizing: border-box !important;
+  }
+
+  .site .hero .hero-books {
+    display: flex !important;
+    justify-content: center !important;
+    align-items: flex-end !important;
+    gap: 8px !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    min-width: 0 !important;
+    min-height: 0 !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    transform: none !important;
+    overflow: hidden !important;
+    box-sizing: border-box !important;
+  }
+
+  .site .hero .hero-book-1,
+  .site .hero .hero-book-2,
+  .site .hero .hero-book-3 {
+    position: relative !important;
+    top: auto !important;
+    right: auto !important;
+    bottom: auto !important;
+    left: auto !important;
+    flex: 1 1 0 !important;
+    width: 0 !important;
+    max-width: 145px !important;
+    min-width: 0 !important;
+    height: auto !important;
+    margin: 0 !important;
+    transform: none !important;
+    box-sizing: border-box !important;
+  }
+
+  .site .hero .hero-book-1 img,
+  .site .hero .hero-book-2 img,
+  .site .hero .hero-book-3 img {
+    display: block !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    height: auto !important;
+  }
+}
+
+
+
+
+
+
+
+
+/* =========================================================
+   FINAL MOBILE OVERFLOW FIX — NAVBAR + CART DRAWER
+========================================================= */
+
+@media screen and (max-width: 760px) {
+  html,
+  body,
+  #root {
+    max-width: 100%;
+    overflow-x: clip !important;
+  }
+
+  .navbar {
+    position: fixed !important;
+    top: 0 !important;
+    left: 0 !important;
+    right: 0 !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    min-width: 0 !important;
+    box-sizing: border-box !important;
+    overflow: visible !important;
+  }
+
+  .navbar-container {
+    display: flex !important;
+    justify-content: space-between !important;
+    align-items: center !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    min-width: 0 !important;
+    padding-left: 12px !important;
+    padding-right: 12px !important;
+    gap: 8px !important;
+    box-sizing: border-box !important;
+  }
+
+  .desktop-nav,
+  .currency-switch,
+  .nav-buy {
+    display: none !important;
+  }
+
+  .nav-actions {
+    display: flex !important;
+    flex: 0 0 auto !important;
+    width: auto !important;
+    max-width: 100% !important;
+    min-width: 0 !important;
+    margin-left: auto !important;
+    gap: 8px !important;
+  }
+
+  .cart-button,
+  .menu-button {
+    flex: 0 0 38px !important;
+    width: 38px !important;
+    min-width: 38px !important;
+    max-width: 38px !important;
+    height: 38px !important;
+    box-sizing: border-box !important;
+  }
+
+  .fullscreen-menu {
+    left: 0 !important;
+    right: 0 !important;
+    width: 100% !important;
+    max-width: 100vw !important;
+    box-sizing: border-box !important;
+  }
+
+  .fullscreen-menu-inner {
+    width: calc(100% - 32px) !important;
+    max-width: 100% !important;
+    min-width: 0 !important;
+    box-sizing: border-box !important;
+  }
+
+  .cart-drawer {
+    left: auto !important;
+    right: 0 !important;
+    width: min(100vw, 420px) !important;
+    max-width: 100vw !important;
+    box-sizing: border-box !important;
+  }
+}
+
+
+
+
+/* Image sizing: preserve native aspect ratio by default */
+img {
+  max-width: 100%;
+}
+
+/* Main book covers: show the complete cover without distortion */
+.hero-book img,
+.price-book-image img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  object-position: center;
+}
+
+/* Product and collection cover images */
+.books-grid img,
+.book-page img {
+  object-fit: contain;
+  object-position: center;
+}
+
+/* Product and book covers: never stretch the source image */
+.book-card img,
+.book-page-image img,
+.related-book-card img {
+  display: block;
+  max-width: 100%;
+  height: auto;
+}
+
+/* If a card has a fixed-size image frame, contain the entire cover */
+.book-card .book-image-frame img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  object-position: center;
+}
+
+
+.legal-email-button {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  cursor: pointer;
+  text-align: left;
+}
+
+.legal-email-button:hover {
+  text-decoration: underline;
+}
+
+.faq-email-button {
+  display: inline-flex;
+  align-items: center;
+  margin-top: 8px;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+
+.faq-email-button:hover {
+  text-decoration: underline;
+}
+
+
+
+
+
+.gumroad-alternative {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  max-width: 760px;
+  margin: 24px auto 20px;
+  padding: 14px 16px;
+  border: 1px solid #e7dcc9;
+  border-radius: 14px;
+  background: #fffdf9;
+  box-sizing: border-box;
+}
+
+.gumroad-alternative-icon {
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+  width: 40px;
+  height: 40px;
+  border-radius: 11px;
+  background: #f3eadb;
+  color: #98713d;
+}
+
+.gumroad-alternative-copy {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 0;
+}
+
+.gumroad-alternative-copy strong {
+  color: #211d18;
+  font-size: 14px;
+}
+
+.gumroad-alternative-copy small {
+  color: #777066;
+  font-size: 12px;
+  line-height: 1.5;
+}
+
+.gumroad-alternative-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  flex-shrink: 0;
+  color: #98713d;
+  font-size: 12px;
+  font-weight: 700;
+  text-decoration: none;
+}
+
+.gumroad-alternative-link:hover {
+  color: #6e4e25;
+  text-decoration: underline;
+}
+
+@media (max-width: 520px) {
+  .gumroad-alternative {
+    flex-wrap: wrap;
+  }
+
+  .gumroad-alternative-copy {
+    flex-basis: calc(100% - 60px);
+  }
+
+  .gumroad-alternative-link {
+    margin-left: 52px;
   }
 }

@@ -11,6 +11,9 @@ import { useCart } from "../context/CartContext";
 import { books } from "../data/content";
 
 import { Link } from "react-router-dom";
+
+import OptimizedImage from "./OptimizedImage";
+
 /* =========================================================
    PRICE FORMATTER
 ========================================================= */
@@ -129,11 +132,16 @@ function Pricing() {
                     to={`/books/${book.id}`}
                     aria-label={`View ${book.title}`}
                   >
-                    <img
-                      src={ index === 0 ? book.images?.cover : book.images?.mockup }
-                      alt={ index === 0 ? `${book.title} book cover` : `${book.title} book mockup` }
-                      width="280"
-                      height="394"
+                    <OptimizedImage
+                      src={index === 0 ? book.images?.cover : book.images?.mockup}
+                      alt={
+                        index === 0
+                          ? `${book.title} book cover`
+                          : `${book.title} book mockup`
+                      }
+                      width={280}
+                      height={394}
+                      sizes="(max-width: 600px) 40vw, 280px"
                       loading="lazy"
                     />
                   </Link>
@@ -342,13 +350,18 @@ function Pricing() {
 
           <div className="pricing-promo__books" aria-hidden="true">
             {books.slice(0, 3).map((book, index) => (
-              <img
+              
+              <OptimizedImage
                 key={book.id}
                 src={book.images?.cover}
-                alt=""
+                alt={`${book.title} book cover`}
                 className={`pricing-promo__book pricing-promo__book--${index + 1}`}
+                width={300}
+                height={430}
+                sizes="(max-width: 600px) 30vw, 160px"
                 loading="lazy"
               />
+
             ))}
           </div>
         </article>
@@ -368,13 +381,18 @@ function Pricing() {
           
           <div className="pricing-promo__books" aria-hidden="true">
             {books.slice(0, 3).map((book, index) => (
-              <img
+              
+              <OptimizedImage
                 key={book.id}
                 src={book.images?.cover}
-                alt=""
+                alt={`${book.title} book cover`}
                 className={`pricing-promo__book pricing-promo__book--${index + 1}`}
+                width={300}
+                height={430}
+                sizes="(max-width: 600px) 30vw, 160px"
                 loading="lazy"
               />
+
             ))}
           </div>
         </article>
@@ -396,13 +414,18 @@ function Pricing() {
           
           <div className="pricing-promo__books" aria-hidden="true">
             {books.slice(0, 3).map((book, index) => (
-              <img
+              
+              <OptimizedImage
                 key={book.id}
                 src={book.images?.cover}
-                alt=""
+                alt={`${book.title} book cover`}
                 className={`pricing-promo__book pricing-promo__book--${index + 1}`}
+                width={300}
+                height={430}
+                sizes="(max-width: 600px) 30vw, 160px"
                 loading="lazy"
               />
+
             ))}
 
             <span className="pricing-promo__badge">$45</span>

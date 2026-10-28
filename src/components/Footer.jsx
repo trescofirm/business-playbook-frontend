@@ -134,7 +134,7 @@ function Footer() {
           >
 
             <img
-              src="/public/images/tresco-logo.png"
+              src="/images/tresco-logo.png"
               alt="TRESCO"
               className="tresco-navbar-logo-image"
             />

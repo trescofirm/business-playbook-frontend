@@ -19,8 +19,7 @@ import {
   collection,
 } from "../data/content";
 
-import { Link, useLocation, } from "react-router-dom";
-
+import { Link, NavLink, useLocation } from "react-router-dom";
 
 
 /* =========================================================
@@ -66,6 +65,7 @@ function Navbar() {
   
 const location = useLocation();
 
+const [activeSection, setActiveSection] = useState("home");
 
   const {
     cartItems,
@@ -128,7 +128,50 @@ const location = useLocation();
     };
   }, []);
 
+useEffect(() => {
+  // Separate pages use their route to determine the active link.
+  if (location.pathname !== "/") {
+    setActiveSection(
+      location.pathname.startsWith("/books")
+        ? "books"
+        : ""
+    );
+    return;
+  }
 
+  const sectionIds = ["home", "author", "faq"];
+  const sections = sectionIds
+    .map((id) => document.getElementById(id))
+    .filter(Boolean);
+
+  if (!sections.length) {
+    setActiveSection("home");
+    return;
+  }
+
+  const observer = new IntersectionObserver(
+  (entries) => {
+    const visibleSections = entries
+      .filter((entry) => entry.isIntersecting)
+      .sort(
+        (a, b) =>
+          a.boundingClientRect.top - b.boundingClientRect.top
+      );
+
+    if (visibleSections.length > 0) {
+      setActiveSection(visibleSections[0].target.id);
+    }
+  },
+  {
+    rootMargin: "-15% 0px -70% 0px",
+    threshold: 0,
+  }
+);
+
+  sections.forEach((section) => observer.observe(section));
+
+  return () => observer.disconnect();
+}, [location.pathname]);
   
 /* =====================================================
    SCROLL TO HOMEPAGE SECTION AFTER ROUTE CHANGE
@@ -331,7 +374,7 @@ useEffect(() => {
           >
             <a href="/" className="navbar-logo tresco-navbar-logo" aria-label="TRESCO Home">
               <img
-                src="/public/images/tresco-logo.png"
+                src="/images/tresco-logo.png"
                 alt="TRESCO"
                 className="tresco-navbar-logo-image"
               />
@@ -343,46 +386,56 @@ useEffect(() => {
               DESKTOP NAVIGATION
           ================================================= */}
 
-          <nav
-            className="desktop-nav"
-            aria-label="Main navigation"
-          >
+          <nav className="desktop-nav" aria-label="Main navigation">
+            <Link
+              to="/"
+              className={`nav-link-button ${
+                activeSection === "home" && location.pathname === "/"
+                  ? "active"
+                  : ""
+              }`}
+              onClick={() => {
+                setMenuOpen(false);
+                setActiveSection("home");
+                window.scrollTo({ top: 0, behavior: "instant" });
+              }}
+            >
+              HOME
+            </Link>
 
             <Link
               to="/books"
-              className="nav-link-button"
+              className={`nav-link-button ${
+                activeSection === "books" ? "active" : ""
+              }`}
               onClick={() => {
                 setMenuOpen(false);
-                window.scrollTo({
-                  top: 0,
-                  behavior: "instant",
-                });
+                setActiveSection("books");
+                window.scrollTo({ top: 0, behavior: "instant" });
               }}
             >
               BOOKS
             </Link>
 
-
             <button
-              onClick={() =>
-                scrollTo("author")
-              }
               type="button"
+              className={`nav-link-button ${
+                activeSection === "author" ? "active" : ""
+              }`}
+              onClick={() => scrollTo("author")}
             >
               AUTHOR
             </button>
-            
-
 
             <button
-              onClick={() =>
-                scrollTo("faq")
-              }
               type="button"
+              className={`nav-link-button ${
+                activeSection === "faq" ? "active" : ""
+              }`}
+              onClick={() => scrollTo("faq")}
             >
               FAQ
             </button>
-
           </nav>
 
 
@@ -525,13 +578,34 @@ useEffect(() => {
               MENU
             </div>
 
+            <NavLink
+              to="/"
+              end
+              className={({ isActive }) =>
+                `mobile-home-link${isActive ? " active" : ""}`
+              }
+              onClick={() => {
+                setMenuOpen(false);
+                window.scrollTo({
+                  top: 0,
+                  behavior: "instant",
+                });
+              }}
+            >
+              <span>HOME</span>
+              <ArrowUpRight size={20} aria-hidden="true" />
+            </NavLink>
+
 
             {/* =================================================
                 BOOKS
             ================================================= */}
             
-            <Link
+            <NavLink
               to="/books"
+              className={({ isActive }) =>
+                `mobile-home-link${isActive ? " active" : ""}`
+              }
               onClick={() => {
                 setMenuOpen(false);
                 window.scrollTo({
@@ -542,7 +616,7 @@ useEffect(() => {
             >
               <span>BOOKS</span>
               <ArrowUpRight size={20} aria-hidden="true" />
-            </Link>
+            </NavLink>
 
             {/* =================================================
                 AUTHOR

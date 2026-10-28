@@ -1,3 +1,5 @@
+import { bookCopy } from "./bookCopy.js";
+
 // =========================================================
 // CATEGORIES
 // =========================================================
@@ -18,7 +20,7 @@ export const categories = [
 // BOOKS / PRODUCTS
 // =========================================================
 
-export const books = [
+const rawBooks = [
 
   // =======================================================
   // BOOK 1
@@ -395,7 +397,7 @@ export const books = [
 
     about:
       "30 Day Dopamine Detox Workbook: Focus and Control for Your Exam Period is a practical 30-day digital workbook created for students and anyone who wants to reduce distractions, improve consistency, and build better daily study habits. Instead of long theoretical explanations, the workbook focuses on simple actions that can be followed every day. Each day combines a short morning routine, a clearly defined main task, a focused work session, a distraction-control challenge, social media limits, and an evening reflection. The workbook uses the popular dopamine detox concept as a practical framework for reducing excessive instant-gratification and distraction habits rather than as a literal process of removing dopamine from the body.",
-
+    
     learn: [
       "Set clear daily and exam-related goals",
       "Identify and control common sources of distraction",
@@ -849,6 +851,16 @@ export const books = [
   },
 ];
 
+// Merge the SEO copy from bookCopy.js onto each book (see that file for details).
+export const books = rawBooks.map((book) => {
+  const { seo, extraFaqs = [], ...rest } = bookCopy[book.id] || {};
+  return {
+    ...book,
+    ...rest,
+    seo: { ...book.seo, ...seo },
+    faqs: [...(book.faqs || []), ...extraFaqs],
+  };
+});
 
 // =========================================================
 // COMPLETE COLLECTION
@@ -997,10 +1009,10 @@ export const faqs = [
     id: 5,
 
     question:
-      "How do I know which book is right for me?",
+      "Are your eBooks compatible with all devices?",
 
     answer:
-      "Choose based on what you want to improve—focus, discipline, confidence, relationships, dating, or personal growth.",
+      "Yes, our eBooks come in universally supported formats like PDF or ePub, which work on smartphones, tablets, eReaders (like Kindle), and laptops.",
   },
 
   {

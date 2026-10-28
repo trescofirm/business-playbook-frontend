@@ -21,6 +21,7 @@ import Terms from "./pages/Terms";
 import Privacy from "./pages/Privacy";
 import Refund from "./pages/Refund";
 import FinalCTA from "./components/FinalCTA";
+import ScrollToTop from "./components/ScrollToTop";
 
 import { books } from "./data/content";
 
@@ -82,14 +83,15 @@ function Home() {
   );
 }
 
-
 // =========================================================
 // APP ROUTES
 // =========================================================
 
 function App() {
   return (
-    <Routes>
+    <>
+      <ScrollToTop />
+        <Routes>
 
       {/* ===================================================
           HOME
@@ -164,7 +166,8 @@ function App() {
         element={<NotFound />}
       />
 
-    </Routes>
+        </Routes>
+    </>
   );
 }
 

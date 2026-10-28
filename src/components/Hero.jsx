@@ -1,6 +1,8 @@
 
 import { motion } from "framer-motion";
 
+import { useNavigate } from "react-router-dom";
+
 import {
   ArrowRight,
   Zap,
@@ -17,6 +19,7 @@ import { books, collection } from "../data/content";
 import OptimizedImage from "../components/OptimizedImage";
 
 function Hero() {
+  const navigate = useNavigate();
   const { addToCart } = useCart();
 
   const collectionBooks = books.slice(0, 3);
@@ -42,12 +45,12 @@ function Hero() {
     }, 150);
   };
 
-  const scrollToBooks = () => {
-    document.getElementById("pricing")?.scrollIntoView({
-      behavior: "smooth",
-      block: "start",
-    });
-  };
+  // const scrollToBooks = () => {
+  //   document.getElementById("pricing")?.scrollIntoView({
+  //     behavior: "smooth",
+  //     block: "start",
+  //   });
+  // };
 
   const bookPanels = [
     {
@@ -128,7 +131,7 @@ function Hero() {
 
               <button
                 className="hero-explore"
-                onClick={scrollToBooks}
+                onClick={() => navigate("/books")}
                 type="button"
               >
                 <span>EXPLORE THE BOOKS</span>
@@ -162,7 +165,9 @@ function Hero() {
             transition={{ duration: 0.75, delay: 0.12, ease: "easeOut" }}
             aria-label="Explore the three Business Playbook books"
           >
-            {bookPanels.map(({ book, className, fallback }, index) => (
+            {bookPanels.map(({ book, className, fallback }, index) => {
+              const isLcpImage = book?.id === "unlock-focus";
+              return (
               <motion.div
                 className={`hero-book-panel ${className}`}
                 key={book?.id ?? className}
@@ -180,11 +185,11 @@ function Hero() {
                   <OptimizedImage
                     className="hero-book-image"
                     src={book.images.cover}
-                    alt={book.title ? `${book.title} book cover` : fallback}
+                    alt={`${book.title} book cover`}
                     width={300}
                     height={430}
                     sizes="(max-width: 600px) 30vw, 200px"
-                    loading={index === 0 ? "eager" : "lazy"}
+                    loading="eager"
                     fetchPriority={index === 0 ? "high" : "auto"}
                   />
                 ) : (
@@ -194,7 +199,8 @@ function Hero() {
                   </div>
                 )}
               </motion.div>
-            ))}
+              );
+            })}
           </motion.div>
         </div>
 

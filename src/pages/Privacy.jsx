@@ -472,12 +472,22 @@ function Privacy() {
               contact us.
             </p>
 
-            <a
-              className="legal-email"
-              href="mailto:support@businessplaybook.com"
+            <button
+              type="button"
+              className="legal-email-button"
+              onClick={() => {
+                const recipient = [
+                  ["lakshaymittal", "1805"].join(""),
+                  "gmail.com",
+                ].join("@");
+              
+                window.location.href = `mailto:${recipient}`;
+              }}
+              aria-label="Email support about refunds"
             >
-              support@businessplaybook.com
-            </a>
+              <Mail size={16} />
+              Contact Support by Email
+            </button>
           </section>
 
         </div>

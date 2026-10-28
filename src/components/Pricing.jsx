@@ -4,8 +4,15 @@ import {
   ShoppingBag,
 } from "lucide-react";
 
+import { trackAddToCart } from "../utils/analytics";
+
+
 import { useCart } from "../context/CartContext";
 import { books } from "../data/content";
+
+import { Link } from "react-router-dom";
+
+import OptimizedImage from "./OptimizedImage";
 
 /* =========================================================
    PRICE FORMATTER
@@ -47,6 +54,8 @@ function Pricing() {
 
       description: book.description,
     });
+
+    trackAddToCart(book);
 
     /* Open cart drawer */
 
@@ -115,20 +124,28 @@ function Pricing() {
               )}
 
               {/* =========================================
-    BOOK COVER
-========================================= */}
+                    BOOK COVER
+                ========================================= */}
 
-<div className="price-book-image">
-  <img
-    src={
-      index === 0
-        ? book.images?.cover
-        : book.images?.mockup
-    }
-    alt={`${book.title} book`}
-    loading="lazy"
-  />
-</div>
+                <div className="price-book-image">
+                  <Link
+                    to={`/books/${book.id}`}
+                    aria-label={`View ${book.title}`}
+                  >
+                    <OptimizedImage
+                      src={index === 0 ? book.images?.cover : book.images?.mockup}
+                      alt={
+                        index === 0
+                          ? `${book.title} book cover`
+                          : `${book.title} book mockup`
+                      }
+                      width={280}
+                      height={394}
+                      sizes="(max-width: 600px) 40vw, 280px"
+                      loading="lazy"
+                    />
+                  </Link>
+                </div>
 
               {/* =========================================
                   BOOK TYPE + CATEGORY
@@ -151,7 +168,12 @@ function Pricing() {
               ========================================= */}
 
               <h3>
-                {book.title}
+                <Link
+                  to={`/books/${book.id}`}
+                  className="book-card-title-link"
+                >
+                  {book.title}
+                </Link>
               </h3>
 
               {/* =========================================
@@ -309,6 +331,108 @@ function Pricing() {
         )}
 
       </div>
+
+
+      {/* PROMOTIONAL BANNERS — BELOW HOMEPAGE PRICING CARDS */}
+      <div className="pricing-promotions">
+        {/* OFFER 1: INDIVIDUAL BOOKS */}
+        <article className="pricing-promo">
+          <div className="pricing-promo__copy">
+            <p className="pricing-promo__eyebrow">INDIVIDUAL BOOK OFFER</p>
+            <h3>
+              Flat <strong>20% OFF</strong>
+              <span>on each book!</span>
+            </h3>
+            <a className="pricing-promo__link" href="/books">
+              View details <span aria-hidden="true">→</span>
+            </a>
+          </div>
+
+          <div className="pricing-promo__books" aria-hidden="true">
+            {books.slice(0, 3).map((book, index) => (
+              
+              <OptimizedImage
+                key={book.id}
+                src={book.images?.cover}
+                alt={`${book.title} book cover`}
+                className={`pricing-promo__book pricing-promo__book--${index + 1}`}
+                width={300}
+                height={430}
+                sizes="(max-width: 600px) 30vw, 160px"
+                loading="lazy"
+              />
+
+            ))}
+          </div>
+        </article>
+          
+        {/* OFFER 2: COMPLETE BOOK COMBO */}
+        <article className="pricing-promo">
+          <div className="pricing-promo__copy">
+            <p className="pricing-promo__eyebrow">COMPLETE BOOK COMBO</p>
+            <h3>
+              All 3 books for
+              <span className="pricing-promo__price">$45!</span>
+            </h3>
+            <a className="pricing-promo__link" href="/books">
+              View details <span aria-hidden="true">→</span>
+            </a>
+          </div>
+          
+          <div className="pricing-promo__books" aria-hidden="true">
+            {books.slice(0, 3).map((book, index) => (
+              
+              <OptimizedImage
+                key={book.id}
+                src={book.images?.cover}
+                alt={`${book.title} book cover`}
+                className={`pricing-promo__book pricing-promo__book--${index + 1}`}
+                width={300}
+                height={430}
+                sizes="(max-width: 600px) 30vw, 160px"
+                loading="lazy"
+              />
+
+            ))}
+          </div>
+        </article>
+          
+        {/* OFFER 3: COLLECTION SAVINGS */}
+        <article className="pricing-promo">
+          <div className="pricing-promo__copy">
+            <p className="pricing-promo__eyebrow">SPECIAL COLLECTION OFFER</p>
+            <h3>
+              Save with the
+              <span className="pricing-promo__highlight">
+                complete collection!
+              </span>
+            </h3>
+            <a className="pricing-promo__link" href="/books">
+              View details <span aria-hidden="true">→</span>
+            </a>
+          </div>
+          
+          <div className="pricing-promo__books" aria-hidden="true">
+            {books.slice(0, 3).map((book, index) => (
+              
+              <OptimizedImage
+                key={book.id}
+                src={book.images?.cover}
+                alt={`${book.title} book cover`}
+                className={`pricing-promo__book pricing-promo__book--${index + 1}`}
+                width={300}
+                height={430}
+                sizes="(max-width: 600px) 30vw, 160px"
+                loading="lazy"
+              />
+
+            ))}
+
+            <span className="pricing-promo__badge">$45</span>
+          </div>
+        </article>
+      </div>
+
 
     </section>
   );

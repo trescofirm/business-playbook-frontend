@@ -1,42 +1,65 @@
+
 import { motion } from "framer-motion";
 
-import {
-  Brain,
-  Target,
-  BookOpen,
-} from "lucide-react";
-
-
 /* =========================================================
-   WHY SECTION POINTS
+   WHY THESE BOOKS — CONTENT
 ========================================================= */
 
 const points = [
   {
-    icon: Brain,
     number: "01",
     title: "Think better",
-    text:
-      "Learn ideas that help you understand people, decisions and opportunities more clearly.",
+    text: "Learn ideas that help you understand people, decisions and opportunities more clearly.",
+    theme: "cream",
+    bookStyle: "warm",
   },
-
   {
-    icon: Target,
     number: "02",
     title: "Act faster",
-    text:
-      "Turn useful knowledge into practical actions instead of leaving it inside a finished book.",
+    text: "Turn useful knowledge into practical actions instead of leaving it inside a finished book.",
+    theme: "blue",
+    bookStyle: "cool",
   },
-
   {
-    icon: BookOpen,
     number: "03",
     title: "Keep revisiting",
-    text:
-      "Short, practical lessons make it easy to return to the ideas whenever you need them.",
+    text: "Short, practical lessons make it easy to return to the ideas whenever you need them.",
+    theme: "green",
+    bookStyle: "sage",
+  },
+  {
+    number: "04",
+    title: "Grow every day",
+    text: "Simple and actionable insights to build confidence, focus, discipline and a better you.",
+    theme: "pink",
+    bookStyle: "rose",
   },
 ];
 
+/* =========================================================
+   PLACEHOLDER BOOK
+========================================================= */
+
+function BookPlaceholder({ bookStyle }) {
+  return (
+    <div className={`why-book-scene why-book-${bookStyle}`} aria-hidden="true">
+      <div className="why-book-orbit" />
+
+      <div className="why-book-stack">
+        <div className="why-book-back" />
+        <div className="why-book-cover">
+          <span>LEARN</span>
+          <span>&</span>
+          <span>COMMUNICATE</span>
+          <i />
+        </div>
+        <div className="why-book-pages" />
+      </div>
+
+      <div className="why-book-shadow" />
+    </div>
+  );
+}
 
 /* =========================================================
    WHY SECTION
@@ -44,139 +67,55 @@ const points = [
 
 function WhySection() {
   return (
-    <section className="why section">
-
-
-      {/* ===================================================
-          SECTION HEADING
-      =================================================== */}
-
+    <section className="why section" id="why-these-books">
       <motion.div
         className="section-heading"
-        initial={{
-          opacity: 0,
-          y: 25,
-        }}
-        whileInView={{
-          opacity: 1,
-          y: 0,
-        }}
-        viewport={{
-          once: true,
-          amount: 0.2,
-        }}
-        transition={{
-          duration: 0.7,
-        }}
+        initial={{ opacity: 0, y: 22 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        viewport={{ once: true, amount: 0.2 }}
+        transition={{ duration: 0.65, ease: "easeOut" }}
       >
-
-        <p className="eyebrow">
-          WHY THESE BOOKS
-        </p>
+        <p className="eyebrow">WHY THESE BOOKS</p>
 
         <h2>
           Knowledge is useful
           <br />
-          when you <i>use it.</i>
+          when you <span className="why-heading-accent">use it.</span>
         </h2>
-
       </motion.div>
 
-
-      {/* ===================================================
-          CARDS
-      =================================================== */}
-
       <div className="why-grid">
+        {points.map((item, index) => (
+          <motion.article
+            className={`why-card why-card-${item.theme}`}
+            key={item.number}
+            initial={{ opacity: 0, y: 24 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, amount: 0.12 }}
+            transition={{
+              duration: 0.55,
+              delay: index * 0.08,
+              ease: "easeOut",
+            }}
+          >
+            <div className="why-card-copy">
+              <span className="why-number">{item.number}</span>
+              <span className="why-number-line" />
 
-        {points.map((item, index) => {
-          const Icon = item.icon;
+              <h3>{item.title}</h3>
+              <p>{item.text}</p>
 
-          return (
-            <motion.article
-              className="why-card"
-              key={item.number}
+              <a className="why-learn-more" href="#books">
+                LEARN MORE <span aria-hidden="true">→</span>
+              </a>
+            </div>
 
-              initial={{
-                opacity: 0,
-                y: 35,
-              }}
-
-              whileInView={{
-                opacity: 1,
-                y: 0,
-              }}
-
-              viewport={{
-                once: true,
-                amount: 0.15,
-              }}
-
-              transition={{
-                duration: 0.6,
-                delay: index * 0.12,
-                ease: "easeOut",
-              }}
-
-              whileHover={{
-                y: -6,
-              }}
-            >
-
-
-              {/* =========================================
-                  TOP
-              ========================================= */}
-
-              <div className="why-top">
-
-                <span className="why-number">
-                  {item.number}
-                </span>
-
-                <div className="why-icon">
-                  <Icon
-                    size={22}
-                    strokeWidth={1.5}
-                  />
-                </div>
-
-              </div>
-
-
-              {/* =========================================
-                  TITLE
-              ========================================= */}
-
-              <h3>
-                {item.title}
-              </h3>
-
-
-              {/* =========================================
-                  DESCRIPTION
-              ========================================= */}
-
-              <p>
-                {item.text}
-              </p>
-
-
-              {/* =========================================
-                  BOTTOM LINE
-              ========================================= */}
-
-              <div className="why-card-line" />
-
-            </motion.article>
-          );
-        })}
-
+            <BookPlaceholder bookStyle={item.bookStyle} />
+          </motion.article>
+        ))}
       </div>
-
     </section>
   );
 }
-
 
 export default WhySection;

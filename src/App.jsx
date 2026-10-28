@@ -10,12 +10,30 @@ import Testimonials from "./components/Testimonials";
 import FAQ from "./components/FAQ";
 import Footer from "./components/Footer";
 
-import Checkout from "./pages/Checkout";
+import OrganizationSchema from "./components/OrganizationSchema";
+import WebSiteSchema from "./components/WebSiteSchema";
+
+import Guides from "./pages/Guides";
+import GuidePage from "./pages/GuidePage";
+
+import Checkout from "./pages/CheckOut";
 import Terms from "./pages/Terms";
 import Privacy from "./pages/Privacy";
 import Refund from "./pages/Refund";
 import FinalCTA from "./components/FinalCTA";
+import ScrollToTop from "./components/ScrollToTop";
 
+import { books } from "./data/content";
+
+import BookPage from "./pages/BookPage";
+
+import Books from "./pages/Books";
+
+import NotFound from "./pages/NotFound";
+
+import BookListSchema from "./components/BookListSchema";
+
+import MyBooks from "./pages/MyBooks";
 
 // =========================================================
 // HOME PAGE
@@ -24,6 +42,9 @@ import FinalCTA from "./components/FinalCTA";
 function Home() {
   return (
     <div className="site">
+
+      <OrganizationSchema />
+      <WebSiteSchema />
 
       {/* NAVBAR */}
       <Navbar />
@@ -62,14 +83,15 @@ function Home() {
   );
 }
 
-
 // =========================================================
 // APP ROUTES
 // =========================================================
 
 function App() {
   return (
-    <Routes>
+    <>
+      <ScrollToTop />
+        <Routes>
 
       {/* ===================================================
           HOME
@@ -80,6 +102,35 @@ function App() {
         element={<Home />}
       />
 
+      <Route
+        path="/books/:slug"
+        element={<BookPage />}
+      />
+
+      <Route
+        path="/my-books"
+        element={<MyBooks />}
+      />
+
+      <Route
+        path="/books"
+        element={
+          <>
+            <BookListSchema books={books} />
+            <Books /> 
+          </>
+        }
+      />
+
+      <Route
+        path="/guides"
+        element={<Guides />}
+      />
+            
+      <Route
+        path="/guides/:slug"
+        element={<GuidePage />}
+      />
 
       {/* ===================================================
           CHECKOUT
@@ -110,7 +161,13 @@ function App() {
         element={<Refund />}
       />
 
-    </Routes>
+      <Route
+        path="*"
+        element={<NotFound />}
+      />
+
+        </Routes>
+    </>
   );
 }
 

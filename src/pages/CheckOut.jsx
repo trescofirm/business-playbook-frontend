@@ -1,5 +1,19 @@
-import { useEffect, useMemo, useState } from "react";
+import {
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
+
 import { Link } from "react-router-dom";
+import Navbar from "../components/Navbar";
+import "../styles/checkout-page.css";
+
+import {
+  trackBeginCheckout,
+  trackAddPaymentInfo,
+  trackPurchase,
+} from "../utils/analytics";
 
 import {
   ArrowLeft,
@@ -17,6 +31,9 @@ import {
 } from "lucide-react";
 
 import { useCart } from "../context/CartContext";
+import { collection } from "../data/content";
+
+ import OptimizedImage from "../components/OptimizedImage";
 
 /* =========================================================
    API CONFIG
@@ -38,21 +55,8 @@ const API_URL = "";
 const RAZORPAY_KEY =
   import.meta.env.VITE_RAZORPAY_KEY_ID || "";
 
-/* =========================================================
-   PRODUCT PRICES
-========================================================= */
-
-const PRODUCT_PRICES = {
-  "how-to-attract-women": 19.99,
-  "dopamine-detox": 15.99,
-  "unlock-focus": 15.99,
-};
-
-/* =========================================================
-   BUNDLE PRICES
-========================================================= */
-
-const BUNDLE_PRICE = 45.0;
+const PAYPAL_CLIENT_ID =
+  import.meta.env.VITE_PAYPAL_CLIENT_ID || "";
 
 /* =========================================================
    COUPONS
@@ -325,26 +329,19 @@ function calculateDisplayPricing(
 ) {
   const currency = "USD";
 
-  const individualSubtotal = cartItems.reduce(
-    (sum, item) => {
-      const product =
-        PRODUCT_PRICES[item.id];
-
-      const itemPrice = product
-        ? Number(product)
-        : Number(item.price || 0);
-
-      return sum + itemPrice;
-    },
-    0
-  );
+  const individualSubtotal =
+    cartItems.reduce(
+      (sum, item) =>
+        sum + Number(item.price || 0),
+      0
+    );
 
   const isBundle =
     cartItems.length === 3;
 
   const subtotal = isBundle
-    ? BUNDLE_PRICE
-    : individualSubtotal;
+  ? Number(collection?.price) || 0
+  : individualSubtotal;
 
   const bundleSaving = isBundle
     ? Math.max(
@@ -434,6 +431,216 @@ function Checkout() {
   const [processing, setProcessing] =
     useState(false);
 
+  const paypalReturnHandled =
+    useRef(false);
+
+
+  /* ======================================================
+     PAYPAL RETURN + CAPTURE
+  ====================================================== */
+
+  useEffect(() => {
+
+    const params =
+      new URLSearchParams(
+        window.location.search
+      );
+
+    const paypalOrderId =
+      params.get("token");
+
+    const payerId =
+      params.get("PayerID");
+
+    if (
+      !paypalOrderId ||
+      !payerId ||
+      paypalReturnHandled.current
+    ) {
+      return;
+    }
+
+    paypalReturnHandled.current = true;
+
+    const capturePayPalPayment =
+      async () => {
+
+        try {
+
+          setProcessing(true);
+          setPaymentError("");
+
+          const response =
+            await fetch(
+              `${API_URL}/api/paypal/capture-order`,
+              {
+                method: "POST",
+
+                headers: {
+                  "Content-Type":
+                    "application/json",
+
+                  Accept:
+                    "application/json",
+                },
+
+                body: JSON.stringify({
+                  paypalOrderId,
+                }),
+              }
+            );
+
+          let result;
+
+          try {
+
+            result =
+              await response.json();
+
+          } catch {
+
+            throw new Error(
+              "PayPal payment server returned an invalid response."
+            );
+
+          }
+
+          if (
+            !response.ok ||
+            !result.success
+          ) {
+
+            throw new Error(
+              result.message ||
+              "PayPal payment capture failed."
+            );
+
+          }
+
+          /* -----------------------------------------
+             CUSTOMER
+          ----------------------------------------- */
+
+          if (result.customer) {
+
+            setForm((prev) => ({
+              ...prev,
+
+              firstName:
+                result.customer.first_name ||
+                prev.firstName,
+
+              lastName:
+                result.customer.last_name ||
+                prev.lastName,
+
+              email:
+                result.customer.email ||
+                prev.email,
+
+              country:
+                result.customer.country ||
+                prev.country,
+
+              state:
+                result.customer.state ||
+                prev.state,
+            }));
+
+          }
+
+          /* -----------------------------------------
+             PAYMENT INFORMATION
+          ----------------------------------------- */
+
+          setPaymentId(
+            result.payment_id ||
+            paypalOrderId
+          );
+
+          setOrderNumber(
+            result.orderNumber || ""
+          );
+
+          setPaidCurrency(
+            result.currency || "USD"
+          );
+
+          /* -----------------------------------------
+             PURCHASED ITEMS
+          ----------------------------------------- */
+
+          setPurchasedItems(
+            result.items || []
+          );
+
+          /* -----------------------------------------
+             DOWNLOAD LINKS
+          ----------------------------------------- */
+
+          setDownloads(
+            result.downloads || []
+          );
+
+          trackPurchase({
+            transactionId: result.payment_id || paypalOrderId,
+            items: cartItems.map((item) => ({
+              item_id: item.id,
+              item_name: item.title,
+              price: item.price,
+              quantity: 1,
+            })),
+            value: pricing.total,
+            currency: result.currency || "USD",
+          });
+
+          /* -----------------------------------------
+             CLEAR CART
+          ----------------------------------------- */
+
+          clearCart();
+
+          /* -----------------------------------------
+             CLEAN PAYPAL QUERY STRING
+          ----------------------------------------- */
+
+          window.history.replaceState(
+            {},
+            document.title,
+            "/checkout"
+          );
+
+          setSuccess(true);
+
+        } catch (error) {
+
+          console.error(
+            "PayPal capture error:",
+            error
+          );
+
+          setPaymentError(
+            error.message ||
+            "PayPal payment capture failed."
+          );
+
+          window.history.replaceState(
+            {},
+            document.title,
+            "/checkout"
+          );
+
+        } finally {
+
+          setProcessing(false);
+
+        }
+
+      };
+
+    capturePayPalPayment();
+
+  }, [clearCart]);
   /* ======================================================
      SUCCESS STATE
   ====================================================== */
@@ -443,6 +650,9 @@ function Checkout() {
 
   const [paymentId, setPaymentId] =
     useState("");
+
+  const [paidCurrency, setPaidCurrency] =
+    useState("USD");
 
   const [orderNumber, setOrderNumber] =
     useState("");
@@ -494,7 +704,7 @@ function Checkout() {
 
   /* ======================================================
      LOAD RAZORPAY SCRIPT
-  ====================================================== */
+  ====================================================== *
 
   useEffect(() => {
     if (window.Razorpay) {
@@ -519,6 +729,65 @@ function Checkout() {
       }
     };
   }, []);
+*/
+
+
+  /* ======================================================
+     LOAD RAZORPAY
+  ====================================================== */
+  
+const loadRazorpay = () =>
+  new Promise((resolve, reject) => {
+    if (window.Razorpay) {
+      resolve();
+      return;
+    }
+
+    const existing =
+      document.querySelector(
+        'script[src="https://checkout.razorpay.com/v1/checkout.js"]'
+      );
+
+    if (existing) {
+      existing.addEventListener(
+        "load",
+        resolve,
+        { once: true }
+      );
+
+      existing.addEventListener(
+        "error",
+        () =>
+          reject(
+            new Error(
+              "Razorpay could not be loaded."
+            )
+          ),
+        { once: true }
+      );
+
+      return;
+    }
+
+    const script =
+      document.createElement("script");
+
+    script.src =
+      "https://checkout.razorpay.com/v1/checkout.js";
+
+    script.async = true;
+
+    script.onload = resolve;
+
+    script.onerror = () =>
+      reject(
+        new Error(
+          "Razorpay could not be loaded."
+        )
+      );
+
+    document.body.appendChild(script);
+  });
 
   /* ======================================================
      UPDATE FORM
@@ -651,46 +920,6 @@ function Checkout() {
   };
 
   /* ======================================================
-     LOAD RAZORPAY
-  ====================================================== */
-
-  const loadRazorpay = () => {
-    return new Promise(
-      (resolve, reject) => {
-        if (window.Razorpay) {
-          resolve();
-          return;
-        }
-
-        let tries = 0;
-
-        const interval =
-          setInterval(() => {
-            tries++;
-
-            if (
-              window.Razorpay
-            ) {
-              clearInterval(interval);
-              resolve();
-              return;
-            }
-
-            if (tries > 50) {
-              clearInterval(interval);
-
-              reject(
-                new Error(
-                  "Razorpay could not be loaded."
-                )
-              );
-            }
-          }, 100);
-      }
-    );
-  };
-
-  /* ======================================================
      PLACE ORDER
   ====================================================== */
 
@@ -712,8 +941,129 @@ function Checkout() {
         return;
       }
 
+      trackBeginCheckout({
+        items: cartItems.map((item) => ({
+          item_id: item.id,
+          item_name: item.title,
+          price: item.price,
+          quantity: 1,
+        })),
+        value: pricing.total,
+        currency: "USD", // display pricing is always computed in USD per calculateDisplayPricing()
+      });
+
       try {
         setProcessing(true);
+      
+      /* ==================================================
+         PAYPAL — INTERNATIONAL ORDERS
+      ================================================== */
+            
+      if (form.country !== "India") {
+      
+        const response =
+          await fetch(
+            `${API_URL}/api/paypal/create-order`,
+            {
+              method: "POST",
+            
+              headers: {
+                "Content-Type":
+                  "application/json",
+              
+                Accept:
+                  "application/json",
+              },
+            
+              body: JSON.stringify({
+              
+                items:
+                  cartItems.map(
+                    (item) => ({
+                      id: item.id,
+                    })
+                  ),
+                
+                couponCode:
+                  appliedCoupon || null,
+                
+                customer: {
+                  firstName:
+                    form.firstName.trim(),
+                
+                  lastName:
+                    form.lastName.trim(),
+                
+                  email:
+                    form.email
+                      .trim()
+                      .toLowerCase(),
+                
+                  country:
+                    form.country,
+                
+                  state:
+                    form.state.trim(),
+                
+                  notes:
+                    form.notes.trim(),
+                },
+              
+              }),
+            }
+          );
+        
+        let result;
+        
+        try {
+        
+          result =
+            await response.json();
+        
+        } catch {
+        
+          throw new Error(
+            "The PayPal payment server returned an invalid response."
+          );
+        
+        }
+      
+        if (
+          !response.ok ||
+          !result.success
+        ) {
+        
+          throw new Error(
+            result.message ||
+            "Unable to create PayPal order."
+          );
+        
+        }
+      
+        if (!result.approvalUrl) {
+        
+          throw new Error(
+            "PayPal approval URL was not returned."
+          );
+        
+        }
+
+        trackAddPaymentInfo({
+          items: cartItems.map((item) => ({
+            item_id: item.id,
+            item_name: item.title,
+            price: item.price,
+            quantity: 1,
+          })),
+          value: pricing.total,
+          currency: "USD",
+        });
+      
+        window.location.href =
+          result.approvalUrl;
+      
+        return;
+      }
 
         /* ==================================================
            CREATE BACKEND ORDER
@@ -828,8 +1178,11 @@ function Checkout() {
         /*
          * Backend is authoritative.
          */
-        const razorpayCurrency = "USD";
-
+       const razorpayCurrency =
+       razorpayOrder?.currency ||
+       result.pricing?.currency ||
+       "INR";
+       
         /* ==================================================
            OPEN RAZORPAY
         ================================================== */
@@ -987,6 +1340,19 @@ function Checkout() {
                       []
                   );
 
+                  trackPurchase({
+                    transactionId:
+                      verifyResult.payment_id || payment.razorpay_payment_id || verifyResult.orderNumber,
+                    items: cartItems.map((item) => ({
+                      item_id: item.id,
+                      item_name: item.title,
+                      price: item.price,
+                      quantity: 1,
+                    })),
+                    value: pricing.total,
+                    currency: verifyResult.currency || razorpayCurrency,
+                  });
+
                   /* ==========================================
                      CLEAR CART
                   ========================================== */
@@ -1032,6 +1398,17 @@ function Checkout() {
           }
         );
 
+        trackAddPaymentInfo({
+          items: cartItems.map((item) => ({
+            item_id: item.id,
+            item_name: item.title,
+            price: item.price,
+            quantity: 1,
+          })),
+          value: pricing.total,
+          currency: razorpayCurrency,
+        });
+
         razorpay.open();
       } catch (error) {
         console.error(
@@ -1053,11 +1430,11 @@ function Checkout() {
   ====================================================== */
 
   if (success) {
-    const successCurrency = "USD";
+    const successCurrency = paidCurrency;
 
     return (
       <div className="checkout-page">
-        <CheckoutHeader />
+        <Navbar />
 
         <div className="checkout-success">
           <div className="checkout-success-card">
@@ -1234,7 +1611,7 @@ function Checkout() {
   if (!cartItems.length) {
     return (
       <div className="checkout-page">
-        <CheckoutHeader />
+        <Navbar />
 
         <div className="checkout-empty">
           <ShoppingBagIcon />
@@ -1271,11 +1648,18 @@ function Checkout() {
      PAYMENT METHOD TEXT
   ====================================================== */
 
+  const isIndia =
+    form.country === "India";
+
   const paymentMethodsText =
-    "International Cards · PayPal (if enabled)";
+    isIndia
+      ? "Razorpay · UPI · Cards · Net Banking"
+      : "PayPal · International Cards";
 
   const paymentDescription =
-    "Secure USD payment through Razorpay.";
+    isIndia
+      ? "Secure INR payment through Razorpay."
+      : "Secure USD payment through PayPal.";
 
   /* ======================================================
      CHECKOUT PAGE
@@ -1284,7 +1668,7 @@ function Checkout() {
   return (
     <div className="checkout-page">
 
-      <CheckoutHeader />
+      <Navbar />
 
       <main className="checkout-container">
 
@@ -1306,103 +1690,21 @@ function Checkout() {
 
         </div>
 
-        {/* =================================================
-            COUPON
-        ================================================= */}
-
-        <div className="checkout-coupon-bar">
-
-          <div className="checkout-coupon-question">
-
-            <Tag size={16} />
-
-            <span>
-              Have a coupon?
-            </span>
-
-            {!appliedCoupon && (
-              <button
-                type="button"
-                onClick={() =>
-                  setCouponOpen(
-                    !couponOpen
-                  )
-                }
-              >
-                Click here to enter
-                your code
-
-                <ChevronDown
-                  size={14}
-                  className={
-                    couponOpen
-                      ? "coupon-arrow-open"
-                      : ""
-                  }
-                />
-              </button>
-            )}
-
-            {appliedCoupon && (
-              <span className="coupon-applied">
-                {appliedCoupon} applied
-              </span>
-            )}
-
+        <div className="checkout-steps" aria-label="Checkout progress">
+          <div className="checkout-step is-current">
+            <span className="checkout-step-number">1</span>
+            <span>Checkout</span>
           </div>
-
-          {couponOpen &&
-            !appliedCoupon && (
-              <div className="checkout-coupon-input">
-
-                <input
-                  value={couponCode}
-                  onChange={(event) => {
-                    setCouponCode(
-                      event.target.value.toUpperCase()
-                    );
-
-                    setCouponError("");
-                  }}
-                  placeholder="PIR"
-                  onKeyDown={(event) => {
-                    if (
-                      event.key === "Enter"
-                    ) {
-                      event.preventDefault();
-                      applyCouponCode();
-                    }
-                  }}
-                />
-
-                <button
-                  type="button"
-                  onClick={
-                    applyCouponCode
-                  }
-                >
-                  APPLY
-                </button>
-
-              </div>
-            )}
-
-          {couponError && (
-            <div
-              className="checkout-inline-error"
-              style={{
-                marginTop: "10px",
-              }}
-            >
-              <AlertCircle size={14} />
-              {couponError}
-            </div>
-          )}
-
-        </div>
-
-        <div className="checkout-or">
-          <span>OR</span>
+          <span className="checkout-step-line" aria-hidden="true" />
+          <div className="checkout-step">
+            <span className="checkout-step-number">2</span>
+            <span>Payment</span>
+          </div>
+          <span className="checkout-step-line" aria-hidden="true" />
+          <div className="checkout-step">
+            <span className="checkout-step-number">3</span>
+            <span>Confirmation</span>
+          </div>
         </div>
 
         <div className="checkout-layout">
@@ -1657,8 +1959,9 @@ function Checkout() {
                 <div className="checkout-gateway-info">
 
                   <strong>
-                    Razorpay Secure
-                    Payment
+                    {isIndia
+                      ? "Razorpay Secure Payment"
+                      : "PayPal Secure Payment"}
                   </strong>
 
                   <span>
@@ -1784,8 +2087,7 @@ function Checkout() {
                 (item) => {
 
                   const productPrice =
-                    PRODUCT_PRICES[item.id] ??
-                    Number(item.price || 0);
+                    Number(item.price) || 0;
 
                   return (
                     <div
@@ -1794,15 +2096,15 @@ function Checkout() {
                     >
 
                       <div className="checkout-order-image">
-
-                        <img
-                          src={
-                            item.image ||
-                            item.cover
-                          }
-                          alt={
-                            item.title
-                          }
+                       
+                        <OptimizedImage
+                          src={item.image || item.cover}
+                          alt={`${item.title} book cover`}
+                          width={300}
+                          height={430}
+                          sizes="(max-width: 600px) 30vw, 120px"
+                          loading="lazy"
+                          className="checkout-book-image"
                         />
 
                       </div>
@@ -1914,7 +2216,9 @@ function Checkout() {
               <div>
 
                 <strong>
-                  Razorpay
+                  {isIndia
+                    ? "Razorpay"
+                    : "PayPal"}
                 </strong>
 
                 <span>
@@ -1993,13 +2297,143 @@ function Checkout() {
 
               Secure payment
               powered by
-              Razorpay
-
+              {isIndia
+                ? "Razorpay"
+                : "PayPal"}
             </p>
+
+        {/* =================================================
+            COUPON
+        ================================================= */}
+
+        <div className="checkout-coupon-bar">
+
+          <div className="checkout-coupon-question">
+
+            <Tag size={16} />
+
+            <span>
+              Have a coupon?
+            </span>
+
+            {!appliedCoupon && (
+              <button
+                type="button"
+                onClick={() =>
+                  setCouponOpen(
+                    !couponOpen
+                  )
+                }
+              >
+                Click here to enter
+                your code
+
+                <ChevronDown
+                  size={14}
+                  className={
+                    couponOpen
+                      ? "coupon-arrow-open"
+                      : ""
+                  }
+                />
+              </button>
+            )}
+
+            {appliedCoupon && (
+              <span className="coupon-applied">
+                {appliedCoupon} applied
+              </span>
+            )}
+
+          </div>
+
+          {couponOpen &&
+            !appliedCoupon && (
+              <div className="checkout-coupon-input">
+
+                <input
+                  value={couponCode}
+                  onChange={(event) => {
+                    setCouponCode(
+                      event.target.value.toUpperCase()
+                    );
+
+                    setCouponError("");
+                  }}
+                  placeholder="PIR"
+                  onKeyDown={(event) => {
+                    if (
+                      event.key === "Enter"
+                    ) {
+                      event.preventDefault();
+                      applyCouponCode();
+                    }
+                  }}
+                />
+
+                <button
+                  type="button"
+                  onClick={
+                    applyCouponCode
+                  }
+                >
+                  APPLY
+                </button>
+
+              </div>
+            )}
+
+          {couponError && (
+            <div
+              className="checkout-inline-error"
+              style={{
+                marginTop: "10px",
+              }}
+            >
+              <AlertCircle size={14} />
+              {couponError}
+            </div>
+          )}
+
+        </div>
 
           </aside>
 
         </div>
+
+        
+        <div className="gumroad-alternative">
+          <span className="gumroad-alternative-icon" aria-hidden="true">
+            <svg
+              viewBox="0 0 24 24"
+              width="20"
+              height="20"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="1.8"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            >
+              <path d="M4 5.5h16v13H4z" />
+              <path d="M8 9h8M8 12h8M8 15h5" />
+            </svg>
+          </span>
+                
+          <span className="gumroad-alternative-copy">
+            <strong>Prefer Gumroad?</strong>
+            <small>Get the 30 Day Dopamine Detox Workbook there.</small>
+          </span>
+                
+          <a
+            href="https://lakshay622.gumroad.com/l/focus-control-for-your-exam-period"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="gumroad-alternative-link"
+          >
+            View on Gumroad <span aria-hidden="true">↗</span>
+          </a>
+        </div>
+
 
         <footer className="checkout-footer">
 

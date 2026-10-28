@@ -19,6 +19,8 @@ import {
   collection,
 } from "../data/content";
 
+import { Link, NavLink, useLocation } from "react-router-dom";
+
 
 /* =========================================================
    COLLECTION PRICE
@@ -59,6 +61,11 @@ const INDIVIDUAL_TOTAL =
 function Navbar() {
   const navigate =
     useNavigate();
+
+  
+const location = useLocation();
+
+const [activeSection, setActiveSection] = useState("home");
 
   const {
     cartItems,
@@ -121,50 +128,129 @@ function Navbar() {
     };
   }, []);
 
+useEffect(() => {
+  // Separate pages use their route to determine the active link.
+  if (location.pathname !== "/") {
+    setActiveSection(
+      location.pathname.startsWith("/books")
+        ? "books"
+        : ""
+    );
+    return;
+  }
+
+  const sectionIds = ["home", "author", "faq"];
+  const sections = sectionIds
+    .map((id) => document.getElementById(id))
+    .filter(Boolean);
+
+  if (!sections.length) {
+    setActiveSection("home");
+    return;
+  }
+
+  const observer = new IntersectionObserver(
+  (entries) => {
+    const visibleSections = entries
+      .filter((entry) => entry.isIntersecting)
+      .sort(
+        (a, b) =>
+          a.boundingClientRect.top - b.boundingClientRect.top
+      );
+
+    if (visibleSections.length > 0) {
+      setActiveSection(visibleSections[0].target.id);
+    }
+  },
+  {
+    rootMargin: "-15% 0px -70% 0px",
+    threshold: 0,
+  }
+);
+
+  sections.forEach((section) => observer.observe(section));
+
+  return () => observer.disconnect();
+}, [location.pathname]);
+  
+/* =====================================================
+   SCROLL TO HOMEPAGE SECTION AFTER ROUTE CHANGE
+===================================================== */
+
+useEffect(() => {
+  if (!location.hash) return;
+
+  const sectionId = decodeURIComponent(
+    location.hash.slice(1)
+  );
+
+  let attempts = 0;
+  let timer;
+
+  const findAndScroll = () => {
+    const section = document.getElementById(sectionId);
+
+    if (section) {
+      section.scrollIntoView({
+        behavior: "smooth",
+        block: "start",
+      });
+      return;
+    }
+
+    // Allow the homepage sections time to render.
+    if (attempts < 20) {
+      attempts += 1;
+      timer = setTimeout(findAndScroll, 100);
+    }
+  };
+
+  timer = setTimeout(findAndScroll, 100);
+
+  return () => clearTimeout(timer);
+}, [location.pathname, location.hash]);
+
 
   /* =====================================================
      LOCK BODY SCROLL
   ===================================================== */
 
-  useEffect(() => {
-    if (
-      menuOpen ||
-      cartOpen
-    ) {
-      document.body.style.overflow =
-        "hidden";
-    } else {
-      document.body.style.overflow =
-        "";
-    }
+useEffect(() => {
+  // Lock the page only when the mobile navigation is open.
+  // Opening the cart must NOT prevent background scrolling.
+  document.body.style.overflow = menuOpen ? "hidden" : "";
 
-    return () => {
-      document.body.style.overflow =
-        "";
-    };
-  }, [
-    menuOpen,
-    cartOpen,
-  ]);
+  return () => {
+    document.body.style.overflow = "";
+  };
+}, [menuOpen]);
 
 
   /* =====================================================
      SCROLL TO SECTION
   ===================================================== */
 
+  
   const scrollTo = (id) => {
     setMenuOpen(false);
 
-    setTimeout(() => {
-      document
-        .getElementById(id)
-        ?.scrollIntoView({
+    // If the section exists on the current page, scroll to it.
+    const currentSection = document.getElementById(id);
+
+    if (currentSection) {
+      setTimeout(() => {
+        currentSection.scrollIntoView({
           behavior: "smooth",
           block: "start",
         });
-    }, 50);
-  };
+      }, 50);
 
+      return;
+    }
+
+    // Otherwise, navigate to the homepage and target its section.
+    navigate(`/#${id}`);
+  };
 
   /* =====================================================
      OPEN CART
@@ -286,13 +372,13 @@ function Navbar() {
             type="button"
             aria-label="Go to home"
           >
-            <span className="brand-mark">
-              BP.
-            </span>
-
-            <span className="brand-name">
-              BUSINESS PLAYBOOK
-            </span>
+            <a href="/" className="navbar-logo tresco-navbar-logo" aria-label="TRESCO Home">
+              <img
+                src="/images/tresco-logo.png"
+                alt="TRESCO"
+                className="tresco-navbar-logo-image"
+              />
+            </a>
           </button>
 
 
@@ -300,40 +386,56 @@ function Navbar() {
               DESKTOP NAVIGATION
           ================================================= */}
 
-          <nav
-            className="desktop-nav"
-            aria-label="Main navigation"
-          >
-
-            <button
-              onClick={() =>
-                scrollTo("pricing")
-              }
-              type="button"
+          <nav className="desktop-nav" aria-label="Main navigation">
+            <Link
+              to="/"
+              className={`nav-link-button ${
+                activeSection === "home" && location.pathname === "/"
+                  ? "active"
+                  : ""
+              }`}
+              onClick={() => {
+                setMenuOpen(false);
+                setActiveSection("home");
+                window.scrollTo({ top: 0, behavior: "instant" });
+              }}
             >
-              THE BOOKS
-            </button>
+              HOME
+            </Link>
 
+            <Link
+              to="/books"
+              className={`nav-link-button ${
+                activeSection === "books" ? "active" : ""
+              }`}
+              onClick={() => {
+                setMenuOpen(false);
+                setActiveSection("books");
+                window.scrollTo({ top: 0, behavior: "instant" });
+              }}
+            >
+              BOOKS
+            </Link>
 
             <button
-              onClick={() =>
-                scrollTo("author")
-              }
               type="button"
+              className={`nav-link-button ${
+                activeSection === "author" ? "active" : ""
+              }`}
+              onClick={() => scrollTo("author")}
             >
               AUTHOR
             </button>
 
-
             <button
-              onClick={() =>
-                scrollTo("faq")
-              }
               type="button"
+              className={`nav-link-button ${
+                activeSection === "faq" ? "active" : ""
+              }`}
+              onClick={() => scrollTo("faq")}
             >
               FAQ
             </button>
-
           </nav>
 
 
@@ -375,7 +477,7 @@ function Navbar() {
             =============================================== */}
 
             <button
-              className="nav-buy"
+              className="nav-buy nav-collection-cta"
               onClick={
                 handleBuyCollection
               }
@@ -476,27 +578,45 @@ function Navbar() {
               MENU
             </div>
 
+            <NavLink
+              to="/"
+              end
+              className={({ isActive }) =>
+                `mobile-home-link${isActive ? " active" : ""}`
+              }
+              onClick={() => {
+                setMenuOpen(false);
+                window.scrollTo({
+                  top: 0,
+                  behavior: "instant",
+                });
+              }}
+            >
+              <span>HOME</span>
+              <ArrowUpRight size={20} aria-hidden="true" />
+            </NavLink>
+
 
             {/* =================================================
                 BOOKS
             ================================================= */}
-
-            <button
-              onClick={() =>
-                scrollTo("pricing")
+            
+            <NavLink
+              to="/books"
+              className={({ isActive }) =>
+                `mobile-home-link${isActive ? " active" : ""}`
               }
-              type="button"
+              onClick={() => {
+                setMenuOpen(false);
+                window.scrollTo({
+                  top: 0,
+                  behavior: "instant",
+                });
+              }}
             >
-              <span>
-                THE BOOKS
-              </span>
-
-              <ArrowUpRight
-                size={20}
-                aria-hidden="true"
-              />
-            </button>
-
+              <span>BOOKS</span>
+              <ArrowUpRight size={20} aria-hidden="true" />
+            </NavLink>
 
             {/* =================================================
                 AUTHOR
@@ -739,7 +859,9 @@ function Navbar() {
                         {item.image && (
                           <img
                             src={item.image}
-                            alt={item.title}
+                            alt={`${item.title} book cover`}
+                            width="70"
+                            height="90"
                           />
                         )}
 
@@ -750,20 +872,41 @@ function Navbar() {
                           BOOK INFORMATION
                       ======================================= */}
 
+                      
+                      {/* BOOK INFORMATION */}
+
                       <div className="cart-item-info">
+                        {(() => {
+                          const book = books.find(
+                            (entry) => entry.id === item.id
+                          );
+                        
+                          return (
+                            <>
+                              <h3>{item.title}</h3>
+                          
+                              {book?.type && (
+                                <span className="cart-item-type">
+                                  {book.type}
+                                </span>
+                              )}
 
-                        <h3>
-                          {item.title}
-                        </h3>
-
-                        <span>
-                          $
-                          {formatPrice(
-                            item.price
-                          )}
-                        </span>
-
+                              <div className="cart-item-prices">
+                                <strong>
+                                  ${formatPrice(item.price)}
+                                </strong>
+                            
+                                {item.oldPrice != null && (
+                                  <del>
+                                    ${formatPrice(item.oldPrice)}
+                                  </del>
+                                )}
+                              </div>
+                            </>
+                          );
+                        })()}
                       </div>
+
 
 
                       {/* =======================================

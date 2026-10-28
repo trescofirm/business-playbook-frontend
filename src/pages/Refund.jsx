@@ -323,6 +323,7 @@ function Refund() {
               team using the official email address
               provided on the website.
             </p>
+<<<<<<< HEAD
             
             <button
               type="button"
@@ -336,6 +337,18 @@ function Refund() {
                 window.location.href = `mailto:${recipient}`;
               }}
               aria-label="Email support about refunds"
+=======
+
+            {/* 
+              IMPORTANT:
+              Replace this email with the client's
+              actual support email before publishing.
+            */}
+
+            <a
+              href="mailto:lakshaymittal1805@gmail.com"
+              className="legal-email"
+>>>>>>> origin/main
             >
               <Mail size={16} />
               Contact Support by Email

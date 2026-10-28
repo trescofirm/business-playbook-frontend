@@ -11,7 +11,11 @@
     "images:optimize": "node scripts/optimize-images.mjs"
   },
   "dependencies": {
+<<<<<<< HEAD
     "@paypal/react-paypal-js": "^10.5.2",
+=======
+    "@paypal/react-paypal-js": "^10.5.1",
+>>>>>>> origin/main
     "framer-motion": "^13.2.0",
     "lucide-react": "^1.43.0",
     "react": "^19.2.8",

@@ -72,8 +72,8 @@ const DEFAULT_CURRENCY = "USD";
 const COUPONS = {
   PIR: {
     type: "percentage",
-    value: 0.10,
-    message: "Coupon applied — 10% discount added.",
+    value: 0.95,
+    message: "Coupon applied — 95% discount added.",
   },
 };
 
@@ -720,7 +720,7 @@ export function CartProvider({
 
       return {
         success: true,
-        message: "Coupon applied — 10% discount added.",
+        message: "Coupon applied — 95% discount added.",
       };
     }
 

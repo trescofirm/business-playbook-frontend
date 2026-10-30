@@ -64,7 +64,7 @@ const PAYPAL_CLIENT_ID =
 
 const COUPON_RULE = {
   code: "PIR",
-  rate: 0.1,
+  rate: 0.95,
 };
 
 /* =========================================================
@@ -396,7 +396,14 @@ function Checkout() {
     cartItems,
     cartCount,
     clearCart,
+    coupon,
+    applyCoupon,
+    removeCoupon,
   } = useCart();
+
+  /* ======================================================
+     SHARED COUPON STATE
+  ====================================================== */
 
   const [couponOpen, setCouponOpen] =
     useState(false);
@@ -404,8 +411,7 @@ function Checkout() {
   const [couponCode, setCouponCode] =
     useState("");
 
-  const [appliedCoupon, setAppliedCoupon] =
-    useState("");
+  const appliedCoupon = coupon || "";
 
   const [couponError, setCouponError] =
     useState("");
@@ -824,9 +830,9 @@ const loadRazorpay = () =>
     }));
 
     /* Reset coupon whenever country changes. */
-    setCouponCode("");
-    setAppliedCoupon("");
-    setCouponError("");
+    // setCouponCode("");
+    // setAppliedCoupon("");
+    // setCouponError("");
 
     setErrors((prev) => ({
       ...prev,
@@ -893,27 +899,25 @@ const loadRazorpay = () =>
   ====================================================== */
 
   const applyCouponCode = () => {
-    const code =
-      couponCode
-        .trim()
-        .toUpperCase();
+    const code = couponCode
+      .trim()
+      .toUpperCase();
 
     if (!code) {
+      setCouponError("Enter a coupon code.");
+      return;
+    }
+
+    const result = applyCoupon(code);
+
+    if (!result.success) {
       setCouponError(
-        "Enter a coupon code."
+        result.message || "Invalid coupon code."
       );
       return;
     }
 
-    if (code !== COUPON_RULE.code) {
-      setAppliedCoupon("");
-      setCouponError(
-        "Invalid coupon. Use PIR."
-      );
-      return;
-    }
-
-    setAppliedCoupon(code);
+    setCouponCode(code);
     setCouponError("");
     setPaymentError("");
     setCouponOpen(false);

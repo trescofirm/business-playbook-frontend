@@ -219,7 +219,7 @@ function Terms() {
 
             <p>
               The promotional code <strong>PIR</strong> provides
-              a 10% discount for eligible international orders.
+              a 95% discount for eligible international orders.
             </p>
 
             <p>

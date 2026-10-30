@@ -164,7 +164,7 @@ const BookPage = () => {
                   {/* Keep your existing price and original price markup here */}
                 </div>
 
-                <div
+                {/* <div
                   className="book-rating-summary"
                   aria-label={`Rated ${book.rating} out of 5`}
                 >
@@ -199,7 +199,7 @@ const BookPage = () => {
                   <span className="book-rating-count">
                     ({book.purchaseCount})
                   </span>
-                </div>
+                </div> */}
               </div>
 
               <div className="book-availability">

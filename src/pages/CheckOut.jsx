@@ -1052,6 +1052,32 @@ const loadRazorpay = () =>
         
         }
 
+        /*
+         * Verify backend payment amount before redirecting.
+         * Never allow PayPal to open with an incorrect total.
+         */
+              
+        const backendPayableTotal =
+          Number(result.pricing?.total);
+              
+        const checkoutPayableTotal =
+          Number(pricing.total);
+              
+        const roundToCents = (value) =>
+          Math.round(
+            (value + Number.EPSILON) * 100
+          ) / 100;
+        
+        if (
+          !Number.isFinite(backendPayableTotal) ||
+          roundToCents(backendPayableTotal) !==
+            roundToCents(checkoutPayableTotal)
+        ) {
+          throw new Error(
+            "The payment amount does not match your discounted checkout total. Please refresh the page and try again."
+          );
+        }
+
         trackAddPaymentInfo({
           items: cartItems.map((item) => ({
             item_id: item.id,

@@ -40,7 +40,7 @@ const COLLECTION_PRICE =
    Book 2  → $15.99
    Book 3  → $15.99
 
-   Total    → $51.97
+   Total    → $99.99
 ========================================================= */
 
 const INDIVIDUAL_TOTAL =

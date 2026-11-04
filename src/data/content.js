@@ -876,7 +876,7 @@ export const collection = {
      $19.99 + $15.99 + $15.99 = $51.97
   */
 
-  individualTotal: 51.97,
+  individualTotal: 99.99,
 
   regularPrice: 50.00,
 
@@ -884,7 +884,7 @@ export const collection = {
 
   /* $51.97 - $45.00 = $6.97 */
 
-  saving: 6.97,
+  saving: 54.00,
 };
 
 

@@ -122,7 +122,7 @@ function Hero() {
                 <del>
                   $
                   {Number(
-                    collection?.individualTotal ?? 51.97
+                    collection?.individualTotal ?? 99.99
                   ).toFixed(2)}
                 </del>
 

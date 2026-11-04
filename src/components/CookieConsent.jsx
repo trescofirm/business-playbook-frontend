@@ -14,6 +14,10 @@ const update = (granted) => {
   });
 
   window.dataLayer.push({ event: "consent_update" });
+
+  if (typeof window.fbq === "function") {
+    window.fbq("consent", granted ? "grant" : "revoke");
+  }
 };
 
 export default function CookieConsent() {

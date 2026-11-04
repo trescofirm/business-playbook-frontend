@@ -445,7 +445,7 @@ function Checkout() {
      PAYPAL RETURN + CAPTURE
   ====================================================== */
 
-  useEffect(() => {
+    useEffect(() => {
 
     const params =
       new URLSearchParams(
@@ -458,9 +458,29 @@ function Checkout() {
     const payerId =
       params.get("PayerID");
 
+    const paypalStatus =
+      params.get("paypal");
+
+    /* Customer cancelled on PayPal */
+    if (paypalStatus === "cancel") {
+      setPaymentError(
+        "PayPal payment was cancelled. You have not been charged. You can try again."
+      );
+      window.history.replaceState(
+        {},
+        document.title,
+        "/checkout"
+      );
+      return;
+    }
+
+    const returnedFromPayPal =
+      Boolean(paypalOrderId) &&
+      (paypalStatus === "return" ||
+        Boolean(payerId));
+
     if (
-      !paypalOrderId ||
-      !payerId ||
+      !returnedFromPayPal ||
       paypalReturnHandled.current
     ) {
       return;
@@ -523,10 +543,6 @@ function Checkout() {
 
           }
 
-          /* -----------------------------------------
-             CUSTOMER
-          ----------------------------------------- */
-
           if (result.customer) {
 
             setForm((prev) => ({
@@ -555,10 +571,6 @@ function Checkout() {
 
           }
 
-          /* -----------------------------------------
-             PAYMENT INFORMATION
-          ----------------------------------------- */
-
           setPaymentId(
             result.payment_id ||
             paypalOrderId
@@ -572,43 +584,36 @@ function Checkout() {
             result.currency || "USD"
           );
 
-          /* -----------------------------------------
-             PURCHASED ITEMS
-          ----------------------------------------- */
-
           setPurchasedItems(
             result.items || []
           );
-
-          /* -----------------------------------------
-             DOWNLOAD LINKS
-          ----------------------------------------- */
 
           setDownloads(
             result.downloads || []
           );
 
-          trackPurchase({
-            transactionId: result.payment_id || paypalOrderId,
-            items: cartItems.map((item) => ({
-              item_id: item.id,
-              item_name: item.title,
-              price: item.price,
-              quantity: 1,
-            })),
-            value: pricing.total,
-            currency: result.currency || "USD",
-          });
-
-          /* -----------------------------------------
-             CLEAR CART
-          ----------------------------------------- */
+          /* Analytics must never break a successful payment */
+          try {
+            trackPurchase({
+              transactionId:
+                result.payment_id || paypalOrderId,
+              items: cartItems.map((item) => ({
+                item_id: item.id,
+                item_name: item.title,
+                price: item.price,
+                quantity: 1,
+              })),
+              value: Number(result.total),
+              currency: result.currency || "USD",
+            });
+          } catch (trackingError) {
+            console.error(
+              "Purchase tracking error:",
+              trackingError
+            );
+          }
 
           clearCart();
-
-          /* -----------------------------------------
-             CLEAN PAYPAL QUERY STRING
-          ----------------------------------------- */
 
           window.history.replaceState(
             {},
@@ -625,15 +630,15 @@ function Checkout() {
             error
           );
 
+          /*
+           * The query string is intentionally KEPT here so that
+           * refreshing the page safely retries confirming the order.
+           * The backend is idempotent and will not double-charge.
+           */
           setPaymentError(
-            error.message ||
-            "PayPal payment capture failed."
-          );
-
-          window.history.replaceState(
-            {},
-            document.title,
-            "/checkout"
+            (error.message ||
+              "PayPal payment capture failed.") +
+            " If PayPal charged you, please do not pay again. Refresh this page to confirm your order, or contact support with your PayPal receipt."
           );
 
         } finally {
@@ -1661,6 +1666,13 @@ const loadRazorpay = () =>
             product before proceeding
             to checkout.
           </p>
+
+          {paymentError && (
+            <div className="checkout-error">
+              <AlertCircle size={16} />
+              <span>{paymentError}</span>
+            </div>
+          )}
 
           <Link
             to="/"

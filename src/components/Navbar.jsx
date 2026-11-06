@@ -44,6 +44,7 @@ const COLLECTION_PRICE =
 ========================================================= */
 
 const INDIVIDUAL_TOTAL =
+  Number(collection?.individualTotal) ||
   books
     .slice(0, 3)
     .reduce(

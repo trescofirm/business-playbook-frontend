@@ -329,7 +329,7 @@ function calculateDisplayPricing(
 ) {
   const currency = "USD";
 
-  const individualSubtotal =
+    const itemsSubtotal =
     cartItems.reduce(
       (sum, item) =>
         sum + Number(item.price || 0),
@@ -339,9 +339,14 @@ function calculateDisplayPricing(
   const isBundle =
     cartItems.length === 3;
 
+  /* Bundle shows the reference total from content.js */
+  const individualSubtotal = isBundle
+    ? Number(collection?.individualTotal) || itemsSubtotal
+    : itemsSubtotal;
+
   const subtotal = isBundle
-  ? Number(collection?.price) || 0
-  : individualSubtotal;
+    ? Number(collection?.price) || 0
+    : itemsSubtotal;
 
   const bundleSaving = isBundle
     ? Math.max(

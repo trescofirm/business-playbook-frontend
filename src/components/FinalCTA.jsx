@@ -18,10 +18,12 @@ function FinalCTA() {
   const threeBooks = books.slice(0, 3);
 
   // Calculate the regular combined price from the existing book data.
-  const individualTotal = threeBooks.reduce(
-    (total, book) => total + Number(book.price || 0),
-    0
-  );
+  const individualTotal =
+    Number(collection.individualTotal) ||
+    threeBooks.reduce(
+      (total, book) => total + Number(book.price || 0),
+      0
+    );
 
   const bundlePrice = Number(collection.price || 45);
 
